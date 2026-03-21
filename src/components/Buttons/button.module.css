@@ -1,0 +1,36 @@
+.button {
+  width: 127px;
+  height: 52px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 26px;
+  background: #bcec30;
+  border: none;
+  border-radius: 46px;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.button:hover {
+  background: #c6ff00;
+  box-shadow: 0 4px 12px rgba(198, 255, 0, 0.4);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .button {
+    width: auto;
+    padding: 12px 20px;
+  }
+}

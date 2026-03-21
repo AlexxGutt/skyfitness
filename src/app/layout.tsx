@@ -1,0 +1,28 @@
+import type { Metadata } from "next";
+import { Roboto } from "next/font/google";
+import "./globals.css";
+
+const roboto = Roboto({
+  weight: ["400", "500", "700"],
+  style: ["normal"],
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  variable: "--font-roboto",
+});
+
+export const metadata: Metadata = {
+  title: "Fitness Training - Онлайн тренировки для занятий дома",
+  description: "Профессиональные онлайн-тренировки для занятий дома",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="ru" className={roboto.variable}>
+      <body className={roboto.className}>{children}</body>
+    </html>
+  );
+}

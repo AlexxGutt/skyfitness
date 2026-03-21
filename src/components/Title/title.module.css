@@ -1,0 +1,156 @@
+.titleSection {
+  width: 100%;
+  background: white;
+}
+
+.container {
+  max-width: 1474px;
+  margin: 0 auto;
+  padding: 0 140px 50px 140px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  box-sizing: border-box;
+}
+
+.leftContent {
+  flex: 1;
+}
+
+.mainTitle {
+  max-width: 947px;
+  color: #000000;
+  font-family: "Roboto", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 60px;
+  line-height: 100%;
+  letter-spacing: 0px;
+  text-align: left;
+  margin: 0;
+}
+
+.rightContent {
+  flex-shrink: 0;
+  position: relative;
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.greenBox {
+  width: 288px;
+  height: 102px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: #bcec30;
+  border-radius: 5px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.greenBoxText {
+  width: 248px;
+  height: 70px;
+  color: #202020;
+  font-family: "Roboto", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 110%;
+  letter-spacing: 0px;
+  text-align: left;
+  margin: 0;
+}
+
+.polygonIcon {
+  position: absolute;
+  left: 117px;
+  top: 85px;
+  width: 30px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1200px) {
+  .container {
+    padding: 40px 60px;
+  }
+
+  .mainTitle {
+    font-size: 48px;
+  }
+
+  .greenBox {
+    width: 260px;
+    height: auto;
+  }
+
+  .greenBoxText {
+    width: auto;
+    font-size: 28px;
+  }
+
+  .polygonIcon {
+    left: 110px;
+    top: 85px;
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .mainTitle {
+    font-size: 36px;
+    text-align: center;
+  }
+
+  .mainTitle br {
+    display: none;
+  }
+
+  .rightContent {
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .greenBox {
+    width: 100%;
+    max-width: 288px;
+  }
+
+  .polygonIcon {
+    left: 110px;
+    top: 85px;
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 480px) {
+  .mainTitle {
+    font-size: 28px;
+  }
+
+  .greenBoxText {
+    font-size: 24px;
+  }
+
+  .polygonIcon {
+    left: 110px;
+    top: 85px;
+    transform: scale(0.7);
+  }
+}
