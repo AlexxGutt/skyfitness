@@ -1,18 +1,31 @@
+"use client";
+
 import Image from "next/image";
+import { CourseType } from "@/sharedTypes/sharedTypes";
+import { getCourseImage, getDifficultyText, getImageStyle } from "./constants";
 import styles from "./card.module.css";
 
-const Card = () => {
+type CardProps = {
+  course: CourseType;
+};
+
+const Card = ({ course }: CardProps) => {
+  const { nameRU, nameEN, durationInDays, difficulty, dailyDurationInMinutes } =
+    course;
+
   return (
     <div className={styles.card}>
-      {/* Изображение с кнопкой поверх */}
-      <div className={styles.imageWrapper}>
-        <Image
-          src="/yoga.svg"
-          alt="Йога"
-          width={834}
-          height={557}
-          className={styles.image}
-        />
+      <div className={styles.imageContainer}>
+        <div className={styles.imageWrapper}>
+          <Image
+            src={getCourseImage(nameEN)}
+            alt={nameRU}
+            width={834}
+            height={557}
+            className={styles.image}
+            style={getImageStyle(nameEN)}
+          />
+        </div>
         <button className={styles.addButton}>
           <Image
             src="/Add-in-Circle.svg"
@@ -23,24 +36,20 @@ const Card = () => {
         </button>
       </div>
 
-      {/* Контент */}
       <div className={styles.content}>
-        {/* Заголовок Йога */}
-        <h3 className={styles.title}>Йога</h3>
-
-        {/* Первый ряд бейджей - 25 дней и время */}
+        <h3 className={styles.title}>{nameRU}</h3>
         <div className={styles.badgesRow}>
           <div className={styles.badge}>
             <Image src="/Calendar.svg" alt="Календарь" width={18} height={18} />
-            <span className={styles.badgeText}>25 дней</span>
+            <span className={styles.badgeText}>{durationInDays} дней</span>
           </div>
           <div className={styles.badge}>
             <Image src="/Time.svg" alt="Время" width={18} height={18} />
-            <span className={styles.badgeText}>20-50 мин/день</span>
+            <span className={styles.badgeText}>
+              {dailyDurationInMinutes.from}-{dailyDurationInMinutes.to} мин/день
+            </span>
           </div>
         </div>
-
-        {/* Второй ряд - сложность */}
         <div className={styles.badgesRow}>
           <div className={styles.badge}>
             <Image
@@ -49,7 +58,9 @@ const Card = () => {
               width={18}
               height={18}
             />
-            <span className={styles.badgeText}>Сложность</span>
+            <span className={styles.badgeText}>
+              {getDifficultyText(difficulty)}
+            </span>
           </div>
         </div>
       </div>
