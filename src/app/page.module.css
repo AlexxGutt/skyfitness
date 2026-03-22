@@ -30,3 +30,14 @@
   justify-content: center;
   z-index: 100;
 }
+
+@media (max-width: 768px) {
+  .buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    padding-right: 16px;
+    width: 100%;
+  }
+}

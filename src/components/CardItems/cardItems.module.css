@@ -11,11 +11,10 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
   display: grid;
   grid-template-columns: repeat(3, 360px);
   justify-content: center;
-  gap: 40px;
+  gap: 45px;
 }
 
 .loading,
@@ -42,12 +41,14 @@
 /* Для мобильных - 1 карточка в ряду */
 @media (max-width: 768px) {
   .section {
-    padding: 30px 0;
+    padding: 34px 0 0 0;
   }
 
   .container {
     grid-template-columns: 1fr;
     justify-items: center;
-    gap: 30px;
+    gap: 34px;
+    padding: 0 16px; /* ← добавляем отступы по бокам */
+    width: 100%;
   }
 }

@@ -120,15 +120,15 @@
   .imageContainer {
     width: 100%;
     max-width: 360px;
-    height: 290px;
+    height: 325px;
   }
 
   .title {
-    font-size: 28px;
+    font-size: 24px;
   }
 
   .badgeText {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .addButton {
