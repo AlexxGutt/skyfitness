@@ -1,7 +1,11 @@
 "use client";
 
 import { getAllCours } from "@/service/api/apiCard";
-import { setAllCourses, setFetchError } from "@/store/features/courseSlice";
+import {
+  setAllCourses,
+  setError,
+  setLoading,
+} from "@/store/features/courseSlice";
 import { useAppSelector } from "@/store/store";
 import { AxiosError } from "axios";
 import { useEffect } from "react";
@@ -9,27 +13,28 @@ import { useDispatch } from "react-redux";
 
 export default function FetchingCourses() {
   const dispatch = useDispatch();
-  const { allCourses } = useAppSelector((state) => state.courses);
+  const { allCourses, isLoading } = useAppSelector((state) => state.courses);
+
   useEffect(() => {
-    if (allCourses.length) {
-      dispatch(setAllCourses(allCourses));
-    } else {
+    if (allCourses.length === 0 && !isLoading) {
+      dispatch(setLoading(true));
       getAllCours()
         .then((res) => {
           dispatch(setAllCourses(res));
         })
         .catch((error) => {
-          if (error instanceof AxiosError)
+          if (error instanceof AxiosError) {
             if (error.response) {
-              dispatch(setFetchError(error.response.data));
+              dispatch(setError(error.response.data));
             } else if (error.request) {
-              dispatch(setFetchError("Произошла ошибка. Попробуйте позже"));
+              dispatch(setError("Произошла ошибка. Попробуйте позже"));
             } else {
-              dispatch(setFetchError("Неизвестная ошибка"));
+              dispatch(setError("Неизвестная ошибка"));
             }
+          }
         });
     }
-  }, [dispatch, allCourses]);
+  }, [dispatch, allCourses.length, isLoading]);
 
-  return <></>;
+  return null;
 }
