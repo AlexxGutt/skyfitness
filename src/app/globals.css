@@ -25,3 +25,15 @@ body {
 .font-bold {
   font-weight: 700;
 }
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+* {
+  -ms-overflow-style: none;
+}
