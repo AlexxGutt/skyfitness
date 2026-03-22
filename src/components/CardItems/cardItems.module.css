@@ -30,7 +30,6 @@
   color: #f44336;
 }
 
-/* Для планшетов - 2 карточки в ряду */
 @media (max-width: 1200px) {
   .container {
     grid-template-columns: repeat(2, 360px);
@@ -38,7 +37,6 @@
   }
 }
 
-/* Для мобильных - 1 карточка в ряду */
 @media (max-width: 768px) {
   .section {
     padding: 34px 0 0 0;
@@ -48,7 +46,7 @@
     grid-template-columns: 1fr;
     justify-items: center;
     gap: 34px;
-    padding: 0 16px; /* ← добавляем отступы по бокам */
+    padding: 0 16px;
     width: 100%;
   }
 }
