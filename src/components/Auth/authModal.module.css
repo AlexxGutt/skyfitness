@@ -1,0 +1,225 @@
+/* Оверлей - затемненный фон */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Модальное окно */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  animation: slideIn 0.3s ease;
+}
+
+.formWrapper {
+  width: 360px;
+  height: auto;
+  min-height: 487px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 48px;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  background: #ffffff;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  font-weight: 400;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  border-radius: 50%;
+}
+
+.closeButton:hover {
+  color: #000;
+}
+
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid #d0cece;
+  border-radius: 8px;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+  background: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  border-color: #bcec30;
+}
+
+.input::placeholder {
+  color: #d0cece;
+}
+
+.primaryButton {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 26px;
+  border-radius: 46px;
+  background: #bcec30;
+  border: none;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+}
+
+.primaryButton:hover {
+  background: #c6ff00;
+  box-shadow: 0 4px 12px rgba(198, 255, 0, 0.4);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+  background: #000000;
+  color: #ffffff;
+}
+
+.secondaryButton {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 26px;
+  border-radius: 46px;
+  background: #ffffff;
+  border: 1px solid #d0cece;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.secondaryButton:hover {
+  background: #f5f5f5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.secondaryButton:active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Мобильная версия */
+@media (max-width: 375px) {
+  .formWrapper {
+    width: calc(100vw - 32px);
+    max-width: 360px;
+    padding: 32px 24px;
+    gap: 32px;
+  }
+
+  .logoWrapper img {
+    width: 180px;
+    height: auto;
+  }
+
+  .input {
+    height: 48px;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    height: 48px;
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+
+  .closeButton {
+    top: 16px;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+    font-size: 24px;
+  }
+}
