@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthModal } from "@/hooks/useAuthModal";
-import AuthModal from "@/components/Auth/AuthModal";
+import AuthModal from "@/components/Modal/AuthModal";
 import styles from "./header.module.css";
 
 const Header: React.FC = () => {
