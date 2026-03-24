@@ -167,6 +167,14 @@
   border-color: #000000;
 }
 
+.errorMessage {
+  color: #c62828;
+  font-size: 14px;
+  text-align: center;
+  width: 100%;
+  margin-top: 5px;
+}
+
 /* Анимации */
 @keyframes fadeIn {
   from {

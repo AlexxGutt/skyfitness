@@ -23,3 +23,8 @@ export interface CoursesResponse {
   total: number;
   success: boolean;
 }
+
+export interface AuthType {
+  email: string;
+  password: string;
+}

@@ -4,11 +4,15 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthModal } from "@/hooks/useAuthModal";
+import { useAppSelector } from "@/store/store";
 import AuthModal from "@/components/Modal/AuthModal";
 import styles from "./header.module.css";
 
 const Header: React.FC = () => {
   const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
+  const { access } = useAppSelector((state) => state.auth);
+
+  const isAuthenticated = !!access;
 
   return (
     <>
@@ -34,13 +38,35 @@ const Header: React.FC = () => {
           </div>
 
           <div className={styles.authSection}>
-            <button
-              className={styles.loginButton}
-              onClick={() => openModal("sign-in")}
-              aria-label="Войти в аккаунт"
-            >
-              Войти
-            </button>
+            {isAuthenticated ? (
+              <div className={styles.userInfo}>
+                <div className={styles.avatar}>
+                  <Image
+                    src="/Profile.svg"
+                    alt="Профиль"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+                <span className={styles.userName}>Сергей</span>
+                <div className={styles.arrowIcon}>
+                  <Image
+                    src="/Rectangle 3765.svg"
+                    alt=""
+                    width={8}
+                    height={8}
+                  />
+                </div>
+              </div>
+            ) : (
+              <button
+                className={styles.loginButton}
+                onClick={() => openModal("sign-in")}
+                aria-label="Войти в аккаунт"
+              >
+                Войти
+              </button>
+            )}
           </div>
         </div>
       </header>
