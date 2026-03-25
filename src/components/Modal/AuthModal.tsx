@@ -4,7 +4,12 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./authModal.module.css";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { clearError, setAccess, setError } from "@/store/features/authSlice";
+import {
+  clearError,
+  setAccess,
+  setError,
+  setUserEmail,
+} from "@/store/features/authSlice";
 import { getSignIn, getSignUp } from "@/service/api/apiAuth";
 
 export type AuthModalProps = {
@@ -76,6 +81,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
         .then((res) => {
           console.log("Вход успешен:", res.data);
           dispatch(setAccess(res.data.token));
+          dispatch(setUserEmail(email));
           dispatch(clearError());
           onClose();
         })

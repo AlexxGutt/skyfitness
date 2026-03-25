@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type initialStateType = {
   username: string;
+  email: string;
   access: string;
   refresh: string;
   isLoading: boolean;
@@ -10,6 +11,7 @@ export type initialStateType = {
 
 const initialState: initialStateType = {
   username: "",
+  email: "",
   access: "",
   refresh: "",
   isLoading: false,
@@ -34,6 +36,10 @@ const authSlice = createSlice({
       state.username = action.payload;
       localStorage.setItem("username", action.payload);
     },
+    setUserEmail: (state, action: PayloadAction<string>) => {
+      state.email = action.payload;
+      localStorage.setItem("email", action.payload);
+    },
     setAccess: (state, action: PayloadAction<string>) => {
       state.access = action.payload;
       localStorage.setItem("access", action.payload);
@@ -46,6 +52,8 @@ const authSlice = createSlice({
       state.username = "";
       state.access = "";
       state.refresh = "";
+      state.email = "";
+      localStorage.removeItem("email");
       localStorage.removeItem("username");
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
@@ -61,5 +69,6 @@ export const {
   setError,
   setLoading,
   clearError,
+  setUserEmail,
 } = authSlice.actions;
 export const authSliceReducer = authSlice.reducer;

@@ -1,18 +1,55 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import { useAppSelector } from "@/store/store";
 import AuthModal from "@/components/Modal/AuthModal";
+import ProfileDropdown from "@/components/Modal/UserModal";
 import styles from "./header.module.css";
 
 const Header: React.FC = () => {
   const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
-  const { access } = useAppSelector((state) => state.auth);
+  const { access, username } = useAppSelector((state) => state.auth);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
 
   const isAuthenticated = !!access;
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
+
+  // Закрытие при клике вне меню и вне кнопки
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // Проверяем, был ли клик вне меню и вне кнопки
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(target)
+      ) {
+        closeDropdown();
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <>
@@ -39,7 +76,11 @@ const Header: React.FC = () => {
 
           <div className={styles.authSection}>
             {isAuthenticated ? (
-              <div className={styles.userInfo}>
+              <div
+                ref={buttonRef}
+                className={styles.userInfo}
+                onClick={toggleDropdown}
+              >
                 <div className={styles.avatar}>
                   <Image
                     src="/Profile.svg"
@@ -48,13 +89,22 @@ const Header: React.FC = () => {
                     height={50}
                   />
                 </div>
-                <span className={styles.userName}>Сергей</span>
+                <span className={styles.userName}>
+                  {username || "Пользователь"}
+                </span>
                 <div className={styles.arrowIcon}>
                   <Image
                     src="/Rectangle 3765.svg"
                     alt=""
                     width={8}
                     height={8}
+                    className={`${styles.arrow} ${isDropdownOpen ? styles.arrowUp : ""}`}
+                  />
+                </div>
+                <div ref={dropdownRef}>
+                  <ProfileDropdown
+                    isOpen={isDropdownOpen}
+                    onClose={closeDropdown}
                   />
                 </div>
               </div>

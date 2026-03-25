@@ -84,10 +84,14 @@
 /* Добавить в конец файла */
 
 /* Блок пользователя */
+/* Добавить в конец файла */
+
 .userInfo {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 }
 
 .avatar {
@@ -124,8 +128,13 @@
   height: 20px;
 }
 
-.arrowIcon img {
+.arrow {
+  transition: transform 0.3s ease;
   transform: rotate(0deg);
+}
+
+.arrowUp {
+  transform: rotate(-180deg);
 }
 
 /* Мобильная версия */
