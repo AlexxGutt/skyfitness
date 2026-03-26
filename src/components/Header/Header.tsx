@@ -1,34 +1,133 @@
-import Image from "next/image";
-import styles from "./header.module.css";
-import Link from "next/link";
+"use client";
 
-const Header = () => {
+import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useAuthModal } from "@/hooks/useAuthModal";
+import { useAppSelector } from "@/store/store";
+import AuthModal from "@/components/Modal/AuthModal";
+import ProfileDropdown from "@/components/Modal/UserModal";
+import styles from "./header.module.css";
+
+const Header: React.FC = () => {
+  const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
+  const { access, username } = useAppSelector((state) => state.auth);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
+
+  const isAuthenticated = !!access;
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
+
+  // Закрытие при клике вне меню и вне кнопки
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // Проверяем, был ли клик вне меню и вне кнопки
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(target)
+      ) {
+        closeDropdown();
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
-        <div className={styles.logoSection}>
-          <Link href="/" className={styles.logoLink}>
-            <div className={styles.logoWrapper}>
-              <Image
-                src="/logo.svg"
-                alt="Логотип Fitness Training"
-                width={48}
-                height={48}
-                priority
-              />
-            </div>
-            <div className={styles.textWrapper}>
-              <span className={styles.subtitle}>
-                Онлайн-тренировки для занятий дома
-              </span>
-            </div>
-          </Link>
+    <>
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <div className={styles.logoSection}>
+            <Link href="/" className={styles.logoLink}>
+              <div className={styles.logoWrapper}>
+                <Image
+                  src="/logo.svg"
+                  alt="Логотип Fitness Training"
+                  width={48}
+                  height={48}
+                  priority
+                />
+              </div>
+              <div className={styles.textWrapper}>
+                <span className={styles.subtitle}>
+                  Онлайн-тренировки для занятий дома
+                </span>
+              </div>
+            </Link>
+          </div>
+
+          <div className={styles.authSection}>
+            {isAuthenticated ? (
+              <div
+                ref={buttonRef}
+                className={styles.userInfo}
+                onClick={toggleDropdown}
+              >
+                <div className={styles.avatar}>
+                  <Image
+                    src="/Profile.svg"
+                    alt="Профиль"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+                <span className={styles.userName}>
+                  {username || "Пользователь"}
+                </span>
+                <div className={styles.arrowIcon}>
+                  <Image
+                    src="/Rectangle 3765.svg"
+                    alt=""
+                    width={8}
+                    height={8}
+                    className={`${styles.arrow} ${isDropdownOpen ? styles.arrowUp : ""}`}
+                  />
+                </div>
+                <div ref={dropdownRef}>
+                  <ProfileDropdown
+                    isOpen={isDropdownOpen}
+                    onClose={closeDropdown}
+                  />
+                </div>
+              </div>
+            ) : (
+              <button
+                className={styles.loginButton}
+                onClick={() => openModal("sign-in")}
+                aria-label="Войти в аккаунт"
+              >
+                Войти
+              </button>
+            )}
+          </div>
         </div>
-        <div className={styles.authSection}>
-          <button className={styles.loginButton}>Войти</button>
-        </div>
-      </div>
-    </header>
+      </header>
+
+      <AuthModal
+        isOpen={isOpen}
+        mode={mode}
+        onClose={closeModal}
+        onSwitchMode={switchMode}
+      />
+    </>
   );
 };
 
