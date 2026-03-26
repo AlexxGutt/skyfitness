@@ -1,12 +1,14 @@
-import { CourseType } from "@/sharedTypes/sharedTypes";
+import { CourseType, UserType } from "@/sharedTypes/sharedTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type initialStateType = {
   allCourses: CourseType[];
+  usersCourse: UserType | null;
   isLoading: boolean;
   error: null | string;
 };
 const initialState: initialStateType = {
+  usersCourse: null,
   allCourses: [],
   isLoading: false,
   error: null,
@@ -19,6 +21,9 @@ const courseSlice = createSlice({
     setAllCourses: (state, action: PayloadAction<CourseType[]>) => {
       state.allCourses = action.payload;
       state.isLoading = false;
+    },
+    setUsersCourse: (state, action: PayloadAction<UserType>) => {
+      state.usersCourse = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -33,6 +38,11 @@ const courseSlice = createSlice({
   },
 });
 
-export const { setAllCourses, setError, setLoading, clearError } =
-  courseSlice.actions;
+export const {
+  setAllCourses,
+  setError,
+  setLoading,
+  clearError,
+  setUsersCourse,
+} = courseSlice.actions;
 export const courseSliceReducer = courseSlice.reducer;

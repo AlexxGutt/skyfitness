@@ -7,16 +7,39 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header/Header";
 import CardItems from "@/components/CardItems/CardItems";
 import styles from "./page.module.css";
+import { useEffect } from "react";
+import { getUsersCourse } from "@/service/api/apiUsersCourse";
+import { setError, setUsersCourse } from "@/store/features/courseSlice";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { username, email } = useAppSelector((state) => state.auth);
+  const { username, email, access } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (access) {
+      getUsersCourse(access)
+        .then((res) => {
+          console.log("Данные пользователя:", res.data);
+          // Сохраняем все данные пользователя в store
+          dispatch(setUsersCourse(res.data.user));
+        })
+        .catch((err) => {
+          console.log("Ошибка:", err);
+          dispatch(setError(err.message || "Ошибка загрузки курсов"));
+        });
+    }
+  }, [access, dispatch]);
 
   const handleLogout = () => {
     dispatch(clearUser());
     router.push("/");
   };
+
+  // Получаем ID выбранных курсов из userData
+  const selectedCourseIds = useAppSelector(
+    (state) => state.courses.usersCourse?.selectedCourses || [],
+  );
 
   return (
     <>
@@ -50,7 +73,7 @@ const ProfilePage = () => {
           {/* Блок "Мои курсы" */}
           <div className={styles.coursesSection}>
             <h1 className={styles.coursesTitle}>Мои курсы</h1>
-            <CardItems />
+            <CardItems type="user" courseIds={selectedCourseIds} />
           </div>
         </div>
       </main>
