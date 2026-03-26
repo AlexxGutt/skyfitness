@@ -1,17 +1,37 @@
-"use client";
-
 import Image from "next/image";
 import { CourseType } from "@/sharedTypes/sharedTypes";
 import { getCourseImage, getDifficultyText, getImageStyle } from "./constants";
 import styles from "./card.module.css";
+import { useAppSelector } from "@/store/store";
+import { getAddCourse } from "@/service/api/apiAddCourse";
 
 type CardProps = {
   course: CourseType;
 };
 
 const Card = ({ course }: CardProps) => {
-  const { nameRU, nameEN, durationInDays, difficulty, dailyDurationInMinutes } =
-    course;
+  const { access } = useAppSelector((state) => state.auth);
+  const {
+    nameRU,
+    nameEN,
+    durationInDays,
+    difficulty,
+    dailyDurationInMinutes,
+    _id,
+  } = course;
+
+  const addCourse = () => {
+    console.log(`Кнопка нажата на ${_id}`);
+    if (access) {
+      getAddCourse(access, _id)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
+  };
 
   return (
     <div className={styles.card}>
@@ -28,6 +48,7 @@ const Card = ({ course }: CardProps) => {
         </div>
         <button className={styles.addButton}>
           <Image
+            onClick={addCourse}
             src="/Add-in-Circle.svg"
             alt="Добавить"
             width={32}
