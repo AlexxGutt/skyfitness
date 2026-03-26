@@ -1,3 +1,5 @@
+"use client";
+
 import {
   setAccess,
   setUserEmail,
@@ -6,7 +8,7 @@ import {
 import { useAppDispatch } from "@/store/store";
 import { useEffect } from "react";
 
-export const useInitAuth = () => {
+const InitAuth = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -18,4 +20,8 @@ export const useInitAuth = () => {
     dispatch(setUserEmail(email || ""));
     dispatch(setAccess(access || ""));
   }, [dispatch]);
+
+  return <></>;
 };
+
+export default InitAuth;
