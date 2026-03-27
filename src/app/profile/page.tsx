@@ -7,36 +7,42 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header/Header";
 import CardItems from "@/components/CardItems/CardItems";
 import styles from "./page.module.css";
-import { useEffect } from "react";
-import { getUsersCourse } from "@/service/api/apiUsersCourse";
-import { setError, setUsersCourse } from "@/store/features/courseSlice";
+import { useEffect, useState, useCallback } from "react";
+import { getUsersCourse } from "@/service/api/apiCourse";
+import { setUsersCourse } from "@/store/features/courseSlice";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { username, email, access } = useAppSelector((state) => state.auth);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => {
+  const fetchUserData = useCallback(() => {
     if (access) {
       getUsersCourse(access)
         .then((res) => {
-          console.log("Данные пользователя:", res.data);
-          // Сохраняем все данные пользователя в store
           dispatch(setUsersCourse(res.data.user));
         })
         .catch((err) => {
           console.log("Ошибка:", err);
-          dispatch(setError(err.message || "Ошибка загрузки курсов"));
         });
     }
   }, [access, dispatch]);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   const handleLogout = () => {
     dispatch(clearUser());
     router.push("/");
   };
 
-  // Получаем ID выбранных курсов из userData
+  const handleCourseChange = () => {
+    fetchUserData();
+    setRefreshKey((prev) => prev + 1);
+  };
+
   const selectedCourseIds = useAppSelector(
     (state) => state.courses.usersCourse?.selectedCourses || [],
   );
@@ -70,10 +76,14 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Блок "Мои курсы" */}
           <div className={styles.coursesSection}>
             <h1 className={styles.coursesTitle}>Мои курсы</h1>
-            <CardItems type="user" courseIds={selectedCourseIds} />
+            <CardItems
+              key={refreshKey}
+              type="user"
+              courseIds={selectedCourseIds}
+              onCourseChange={handleCourseChange}
+            />
           </div>
         </div>
       </main>

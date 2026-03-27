@@ -6,12 +6,17 @@ import Loader from "@/components/Loader/Loader";
 import { CourseType } from "@/sharedTypes/sharedTypes";
 import styles from "./cardItems.module.css";
 
-type CardItemsProps = {
+export type CardItemsProps = {
   type?: "all" | "user";
-  courseIds?: string[]; // ← добавляем пропс для ID курсов пользователя
+  courseIds?: string[];
+  onCourseChange?: () => void;
 };
 
-const CardItems = ({ type = "all", courseIds = [] }: CardItemsProps) => {
+const CardItems = ({
+  type = "all",
+  courseIds = [],
+  onCourseChange,
+}: CardItemsProps) => {
   const { allCourses, isLoading, error } = useAppSelector(
     (state) => state.courses,
   );
@@ -23,7 +28,6 @@ const CardItems = ({ type = "all", courseIds = [] }: CardItemsProps) => {
   if (type === "all") {
     courses = safeAllCourses;
   } else {
-    // Фильтруем курсы по переданным ID
     if (safeAllCourses.length > 0 && courseIds.length > 0) {
       courses = safeAllCourses.filter((course) =>
         courseIds.includes(course._id),
@@ -63,7 +67,12 @@ const CardItems = ({ type = "all", courseIds = [] }: CardItemsProps) => {
     <section className={styles.section}>
       <div className={styles.container}>
         {courses.map((course) => (
-          <Card key={course._id} course={course} />
+          <Card
+            key={course._id}
+            course={course}
+            variant={type === "user" ? "delete" : "add"}
+            onSuccess={onCourseChange}
+          />
         ))}
       </div>
     </section>

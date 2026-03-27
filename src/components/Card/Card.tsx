@@ -3,13 +3,15 @@ import { CourseType } from "@/sharedTypes/sharedTypes";
 import { getCourseImage, getDifficultyText, getImageStyle } from "./constants";
 import styles from "./card.module.css";
 import { useAppSelector } from "@/store/store";
-import { getAddCourse } from "@/service/api/apiAddCourse";
+import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
 
 type CardProps = {
   course: CourseType;
+  variant?: "add" | "delete";
+  onSuccess?: () => void;
 };
 
-const Card = ({ course }: CardProps) => {
+const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
   const { access } = useAppSelector((state) => state.auth);
   const {
     nameRU,
@@ -20,17 +22,31 @@ const Card = ({ course }: CardProps) => {
     _id,
   } = course;
 
-  const addCourse = () => {
-    console.log(`Кнопка нажата на ${_id}`);
-    if (access) {
-      getAddCourse(access, _id)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
+  const isDeleteVariant = variant === "delete";
+  const buttonIcon = isDeleteVariant
+    ? "/Remove-in-Circle.svg"
+    : "/Add-in-Circle.svg";
+  const buttonAlt = isDeleteVariant ? "Удалить курс" : "Добавить курс";
+  const tooltipText = isDeleteVariant ? "Удалить курс" : "Добавить курс";
+
+  const handleClick = () => {
+    if (!access) {
+      alert("Авторизуйтесь, чтобы продолжить");
+      return;
     }
+
+    const request = isDeleteVariant
+      ? getDeleteCourse(access, _id)
+      : getAddCourse(access, _id);
+
+    request
+      .then(() => {
+        console.log(isDeleteVariant ? "Курс удален" : "Курс добавлен");
+        onSuccess?.();
+      })
+      .catch((err) => {
+        alert(err.response?.data?.message || "Произошла ошибка");
+      });
   };
 
   return (
@@ -46,15 +62,12 @@ const Card = ({ course }: CardProps) => {
             style={getImageStyle(nameEN)}
           />
         </div>
-        <button className={styles.addButton}>
-          <Image
-            onClick={addCourse}
-            src="/Add-in-Circle.svg"
-            alt="Добавить"
-            width={32}
-            height={32}
-          />
-        </button>
+        <div className={styles.buttonWrapper}>
+          <button className={styles.addButton} onClick={handleClick}>
+            <Image src={buttonIcon} alt={buttonAlt} width={32} height={32} />
+          </button>
+          <span className={styles.tooltip}>{tooltipText}</span>
+        </div>
       </div>
 
       <div className={styles.content}>

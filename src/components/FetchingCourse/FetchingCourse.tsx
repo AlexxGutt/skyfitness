@@ -1,6 +1,6 @@
 "use client";
 
-import { getAllCours } from "@/service/api/apiCard";
+import { getAllCours } from "@/service/api/apiCourse";
 import {
   setAllCourses,
   setError,

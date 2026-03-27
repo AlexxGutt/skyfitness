@@ -37,18 +37,23 @@
   display: block;
 }
 
-.addButton {
+/* Контейнер для кнопки и тултипа */
+.buttonWrapper {
   position: absolute;
   top: 20px;
   right: 20px;
+  z-index: 10;
+}
+
+.addButton {
   width: 32px;
   height: 32px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
-  z-index: 10;
   transition: transform 0.2s ease;
+  display: block;
 }
 
 .addButton:hover {
@@ -57,6 +62,47 @@
 
 .addButton:active {
   transform: scale(0.95);
+}
+
+/* Тултип при наведении */
+.tooltip {
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%);
+  background: #333;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+  pointer-events: none;
+}
+
+.buttonWrapper:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Стрелочка у тултипа */
+.tooltip::before {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 0 6px 6px;
+  border-color: transparent transparent transparent #333;
 }
 
 .content {
@@ -131,10 +177,17 @@
     font-size: 16px;
   }
 
-  .addButton {
+  .buttonWrapper {
     top: 15px;
     right: 15px;
+  }
+
+  .addButton {
     width: 28px;
     height: 28px;
+  }
+
+  .tooltip {
+    display: none;
   }
 }
