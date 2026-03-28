@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthModal } from "@/hooks/useAuthModal";
@@ -9,7 +9,7 @@ import AuthModal from "@/components/Modal/AuthModal";
 import ProfileDropdown from "@/components/Modal/UserModal";
 import styles from "./header.module.css";
 
-const Header: React.FC = () => {
+const Header = () => {
   const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
   const { access, username } = useAppSelector((state) => state.auth);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

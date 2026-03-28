@@ -4,6 +4,7 @@ import { getCourseImage, getDifficultyText, getImageStyle } from "./constants";
 import styles from "./card.module.css";
 import { useAppSelector } from "@/store/store";
 import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
+import { useRouter } from "next/navigation";
 
 type CardProps = {
   course: CourseType;
@@ -12,6 +13,12 @@ type CardProps = {
 };
 
 const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push(`/course/${_id}`);
+  };
+
   const { access } = useAppSelector((state) => state.auth);
   const {
     nameRU,
@@ -50,7 +57,7 @@ const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={handleCardClick}>
       <div className={styles.imageContainer}>
         <div className={styles.imageWrapper}>
           <Image
