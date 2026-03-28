@@ -40,6 +40,7 @@ const CoursePage = () => {
   ];
 
   const handleAddCourse = () => {
+    const ID = course?._id;
     if (!access) {
       alert("Авторизуйтесь, чтобы добавить курс");
       return;

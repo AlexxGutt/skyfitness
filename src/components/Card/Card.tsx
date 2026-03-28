@@ -4,13 +4,13 @@ import {
   getCourseImage,
   getDifficultyText,
   getImageStyle,
-} from "../../constants/cardConstants";
+} from "@/constants/cardConstants";
 import styles from "./card.module.css";
 import { useAppSelector } from "@/store/store";
 import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
 import { useRouter } from "next/navigation";
 
-type CardProps = {
+export type CardProps = {
   course: CourseType;
   variant?: "add" | "delete";
   onSuccess?: () => void;
@@ -18,11 +18,6 @@ type CardProps = {
 
 const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
   const router = useRouter();
-
-  const handleCardClick = () => {
-    router.push(`/course/${_id}`);
-  };
-
   const { access } = useAppSelector((state) => state.auth);
   const {
     nameRU,
@@ -40,7 +35,12 @@ const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
   const buttonAlt = isDeleteVariant ? "Удалить курс" : "Добавить курс";
   const tooltipText = isDeleteVariant ? "Удалить курс" : "Добавить курс";
 
-  const handleClick = () => {
+  const handleCardClick = () => {
+    router.push(`/course/${_id}`);
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ← Останавливаем всплытие события
     if (!access) {
       alert("Авторизуйтесь, чтобы продолжить");
       return;
@@ -74,7 +74,7 @@ const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
           />
         </div>
         <div className={styles.buttonWrapper}>
-          <button className={styles.addButton} onClick={handleClick}>
+          <button className={styles.addButton} onClick={handleButtonClick}>
             <Image src={buttonIcon} alt={buttonAlt} width={32} height={32} />
           </button>
           <span className={styles.tooltip}>{tooltipText}</span>
