@@ -28,3 +28,13 @@ export interface AuthType {
   email: string;
   password: string;
 }
+
+export interface UserType {
+  _id: string;
+  email: string;
+  selectedCourses: string[];
+  courseProgress: string[]; //потом переделеать на CourseProgress[]
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}

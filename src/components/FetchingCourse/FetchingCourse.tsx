@@ -1,7 +1,6 @@
 "use client";
 
-import { useInitAuth } from "@/hooks/useInitAuth";
-import { getAllCours } from "@/service/api/apiCard";
+import { getAllCours } from "@/service/api/apiCourse";
 import {
   setAllCourses,
   setError,
@@ -15,8 +14,6 @@ import { useDispatch } from "react-redux";
 export default function FetchingCourses() {
   const dispatch = useDispatch();
   const { allCourses, isLoading } = useAppSelector((state) => state.courses);
-
-  useInitAuth();
 
   useEffect(() => {
     if (allCourses.length === 0 && !isLoading) {
