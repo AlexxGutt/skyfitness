@@ -4,7 +4,7 @@ import Header from "@/components/Header/Header";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useAppSelector } from "@/store/store";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
 import { getCourseImage } from "@/constants/cardConstants";
@@ -20,6 +20,8 @@ const CoursePage = () => {
     }
     return null;
   }, [id, allCourses]);
+
+  useEffect(() => {}, [access]);
 
   const loading = allCourses.length === 0;
 

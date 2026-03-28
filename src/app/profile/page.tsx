@@ -35,7 +35,7 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     dispatch(clearUser());
-    router.push("/");
+    router.replace("/");
   };
 
   const handleCourseChange = () => {
