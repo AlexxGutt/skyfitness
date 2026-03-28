@@ -35,7 +35,7 @@
   position: absolute;
   top: 40px;
   left: 40px;
-  width: 300px;
+  width: 440px;
   color: #ffffff;
   font-family: "Roboto", sans-serif;
   font-style: normal;
@@ -93,7 +93,7 @@
   display: flex;
   flex-direction: row; /* ← меняем на row */
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   gap: 25px; /* ← отступ между цифрой и текстом */
   padding: 20px;
   border-radius: 28px;
@@ -318,7 +318,7 @@
 
 .ctaImageSportsman {
   position: absolute;
-  top: 169px;
+  bottom: -569px;
   right: 0px;
   width: 519px;
   height: 540px;

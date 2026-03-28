@@ -34,8 +34,8 @@ export const courseImagePositions: Record<
   },
   StepAirobic: {
     top: -715,
-    left: -279,
-    width: 721,
+    left: -89,
+    width: 521,
   },
   Yoga: {
     top: -119,
@@ -53,6 +53,7 @@ export const courseImagePositions: Record<
     width: 1150,
   },
 };
+
 export const getCourseImagePosition = (nameEN: string) => {
   return courseImagePositions[nameEN] || { top: 0, left: 0 };
 };

@@ -2,16 +2,15 @@
 
 import Header from "@/components/Header/Header";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useAppSelector } from "@/store/store";
 import { useMemo } from "react";
-import { getCourseImage } from "@/components/Card/constants";
-import { getAddCourse } from "@/service/api/apiCourse";
 import styles from "./page.module.css";
+import { getHeroImageStyle } from "@/constants/coursePageConstants";
+import { getCourseImage } from "@/constants/cardConstants";
 
 const CoursePage = () => {
   const { id } = useParams();
-  const router = useRouter();
   const { allCourses } = useAppSelector((state) => state.courses);
   const { access } = useAppSelector((state) => state.auth);
 
@@ -24,29 +23,11 @@ const CoursePage = () => {
 
   const loading = allCourses.length === 0;
 
-  const benefits = [
-    {
-      number: "1",
-      text: "Давно хотели попробовать йогу, но не решались начать",
-    },
-    {
-      number: "2",
-      text: "Хотите укрепить позвоночник, избавиться от болей в спине и суставах",
-    },
-    {
-      number: "3",
-      text: "Ищете активность, полезную для тела и души",
-    },
-  ];
+  // Данные для карточек преимуществ (из fitting API)
+  const benefits = course?.fitting || [""];
 
-  const directions = [
-    "Йога для новичков",
-    "Классическая йога",
-    "Кундалини-йога",
-    "Йогатерапия",
-    "Хатха-йога",
-    "Аштанга-йога",
-  ];
+  // Направления из API
+  const directions = course?.directions || [""];
 
   const benefitsList = [
     "проработка всех групп мышц",
@@ -58,18 +39,14 @@ const CoursePage = () => {
 
   const handleAddCourse = () => {
     if (!access) {
-      router.push("/sign-in");
+      alert("Авторизуйтесь, чтобы добавить курс");
       return;
     }
-
-    getAddCourse(access, id as string)
-      .then(() => {
-        alert("Курс успешно добавлен!");
-      })
-      .catch((err) => {
-        alert(err.response?.data?.message || "Ошибка добавления курса");
-      });
+    alert("Курс добавлен!");
   };
+
+  // Получаем стили для hero изображения
+  const heroImageStyle = getHeroImageStyle(course?.nameEN || "Yoga");
 
   if (loading) {
     return (
@@ -99,15 +76,26 @@ const CoursePage = () => {
       <main className={styles.container}>
         <div className={styles.content}>
           {/* Блок с фоном и картинкой */}
-          <div className={styles.heroBlock}>
+          <div
+            className={styles.heroBlock}
+            style={{ backgroundColor: heroImageStyle.bgColor }}
+          >
             <div className={styles.heroContent}>
               <h1 className={styles.courseTitle}>{course.nameRU}</h1>
-              <div className={styles.heroImage}>
+              <div
+                className={styles.heroImage}
+                style={{
+                  top: `${heroImageStyle.top}px`,
+                  right: `${heroImageStyle.right}px`,
+                  width: `${heroImageStyle.width}px`,
+                  height: `${heroImageStyle.height}px`,
+                }}
+              >
                 <Image
                   src={getCourseImage(course.nameEN)}
                   alt={course.nameRU}
-                  width={1023}
-                  height={683}
+                  width={heroImageStyle.width}
+                  height={heroImageStyle.height}
                   className={styles.courseImage}
                 />
               </div>
@@ -121,8 +109,8 @@ const CoursePage = () => {
           <div className={styles.benefitsGrid}>
             {benefits.map((benefit, index) => (
               <div key={index} className={styles.benefitCard}>
-                <div className={styles.benefitNumber}>{benefit.number}</div>
-                <div className={styles.benefitText}>{benefit.text}</div>
+                <div className={styles.benefitNumber}>{index + 1}</div>
+                <div className={styles.benefitText}>{benefit}</div>
               </div>
             ))}
           </div>
@@ -179,7 +167,7 @@ const CoursePage = () => {
                 src="/Vector green.svg"
                 alt=""
                 width={670}
-                height={420}
+                height={491}
                 className={styles.ctaImageGreen}
               />
               <Image

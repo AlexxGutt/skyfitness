@@ -1,6 +1,10 @@
 import Image from "next/image";
 import { CourseType } from "@/sharedTypes/sharedTypes";
-import { getCourseImage, getDifficultyText, getImageStyle } from "./constants";
+import {
+  getCourseImage,
+  getDifficultyText,
+  getImageStyle,
+} from "../../constants/cardConstants";
 import styles from "./card.module.css";
 import { useAppSelector } from "@/store/store";
 import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
