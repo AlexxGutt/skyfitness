@@ -1,17 +1,29 @@
 import Image from "next/image";
 import { CourseType } from "@/sharedTypes/sharedTypes";
-import { getCourseImage, getDifficultyText, getImageStyle } from "./constants";
+import {
+  getCourseImage,
+  getDifficultyText,
+  getImageStyle,
+} from "@/constants/cardConstants";
 import styles from "./card.module.css";
 import { useAppSelector } from "@/store/store";
 import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
+import { useRouter } from "next/navigation";
 
-type CardProps = {
+export type CardProps = {
   course: CourseType;
   variant?: "add" | "delete";
   onSuccess?: () => void;
+  progress?: number; // Добавляем пропс для прогресса (0-100)
 };
 
-const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
+const Card = ({
+  course,
+  variant = "add",
+  onSuccess,
+  progress = 40,
+}: CardProps) => {
+  const router = useRouter();
   const { access } = useAppSelector((state) => state.auth);
   const {
     nameRU,
@@ -29,7 +41,19 @@ const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
   const buttonAlt = isDeleteVariant ? "Удалить курс" : "Добавить курс";
   const tooltipText = isDeleteVariant ? "Удалить курс" : "Добавить курс";
 
-  const handleClick = () => {
+  // Определяем текст кнопки в зависимости от прогресса
+  const getButtonText = () => {
+    if (progress === 100) return "Начать заново";
+    if (progress > 0) return "Продолжить";
+    return "Начать";
+  };
+
+  const handleCardClick = () => {
+    router.push(`/course/${_id}`);
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!access) {
       alert("Авторизуйтесь, чтобы продолжить");
       return;
@@ -50,7 +74,7 @@ const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={handleCardClick}>
       <div className={styles.imageContainer}>
         <div className={styles.imageWrapper}>
           <Image
@@ -63,7 +87,7 @@ const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
           />
         </div>
         <div className={styles.buttonWrapper}>
-          <button className={styles.addButton} onClick={handleClick}>
+          <button className={styles.addButton} onClick={handleButtonClick}>
             <Image src={buttonIcon} alt={buttonAlt} width={32} height={32} />
           </button>
           <span className={styles.tooltip}>{tooltipText}</span>
@@ -97,6 +121,20 @@ const Card = ({ course, variant = "add", onSuccess }: CardProps) => {
             </span>
           </div>
         </div>
+
+        {/* Блок прогресса - только для варианта "delete" (страница профиля) */}
+        {variant === "delete" && (
+          <div className={styles.progressSection}>
+            <div className={styles.progressText}>Прогресс {progress}%</div>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <button className={styles.actionButton}>{getButtonText()}</button>
+          </div>
+        )}
       </div>
     </div>
   );

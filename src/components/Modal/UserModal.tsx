@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/store/store";
 import { clearUser } from "@/store/features/authSlice";
 import styles from "./userModal.module.css";
-import { useRouter } from "next/navigation";
 
 type ProfileDropdownProps = {
   isOpen: boolean;
@@ -15,11 +14,9 @@ type ProfileDropdownProps = {
 const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   const dispatch = useAppDispatch();
   const { username, email } = useAppSelector((state) => state.auth);
-  const router = useRouter();
 
   const handleLogout = () => {
     dispatch(clearUser());
-    router.push("/");
   };
 
   // Предотвращаем закрытие при клике внутри дропдауна
