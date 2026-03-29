@@ -14,14 +14,16 @@ export type CardProps = {
   course: CourseType;
   variant?: "add" | "delete";
   onSuccess?: () => void;
-  progress?: number; // Добавляем пропс для прогресса (0-100)
+  progress?: number; // Прогресс (0-100)
+  onStartCourse?: (courseId: string) => void; // Колбэк для кнопки "Начать/Продолжить"
 };
 
 const Card = ({
   course,
   variant = "add",
   onSuccess,
-  progress = 40,
+  progress = 0,
+  onStartCourse,
 }: CardProps) => {
   const router = useRouter();
   const { access } = useAppSelector((state) => state.auth);
@@ -71,6 +73,13 @@ const Card = ({
       .catch((err) => {
         alert(err.response?.data?.message || "Произошла ошибка");
       });
+  };
+
+  const handleActionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onStartCourse) {
+      onStartCourse(_id);
+    }
   };
 
   return (
@@ -132,7 +141,9 @@ const Card = ({
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <button className={styles.actionButton}>{getButtonText()}</button>
+            <button className={styles.actionButton} onClick={handleActionClick}>
+              {getButtonText()}
+            </button>
           </div>
         )}
       </div>
