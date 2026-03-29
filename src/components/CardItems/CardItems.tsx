@@ -10,12 +10,16 @@ export type CardItemsProps = {
   type?: "all" | "user";
   courseIds?: string[];
   onCourseChange?: () => void;
+  courseProgress?: Record<string, number>;
+  onStartCourse?: (courseId: string) => void;
 };
 
 const CardItems = ({
   type = "all",
   courseIds = [],
   onCourseChange,
+  courseProgress = {},
+  onStartCourse,
 }: CardItemsProps) => {
   const { allCourses, isLoading, error } = useAppSelector(
     (state) => state.courses,
@@ -72,6 +76,8 @@ const CardItems = ({
             course={course}
             variant={type === "user" ? "delete" : "add"}
             onSuccess={onCourseChange}
+            progress={courseProgress[course._id] || 0}
+            onStartCourse={onStartCourse} // Добавляем
           />
         ))}
       </div>
