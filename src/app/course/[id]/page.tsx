@@ -8,6 +8,7 @@ import { useEffect, useMemo } from "react";
 import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
 import { getCourseImage } from "@/constants/cardConstants";
+import { getAddCourse } from "@/service/api/apiCourse";
 
 const CoursePage = () => {
   const { id } = useParams();
@@ -40,12 +41,20 @@ const CoursePage = () => {
   ];
 
   const handleAddCourse = () => {
-    const ID = course?._id;
+    const ID = course?._id as string;
     if (!access) {
       alert("Авторизуйтесь, чтобы добавить курс");
       return;
     }
-    alert("Курс добавлен!");
+    getAddCourse(access, ID)
+      .then(() => {
+        alert("Курс успешно добавлен!");
+      })
+      .catch((err) => {
+        const errorMessage =
+          err.response?.data?.message || "Ошибка добавления курса";
+        alert(errorMessage);
+      });
   };
 
   // Получаем стили для hero изображения
