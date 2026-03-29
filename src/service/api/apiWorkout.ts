@@ -9,3 +9,12 @@ export const getCourseWorkout = (token: string, id: string) => {
     },
   });
 };
+
+export const getDataWorkout = (token: string, id: string) => {
+  return axios.get(BASE_URL + `/api/fitness/workouts/${id}`, {
+    headers: {
+      "Content-Type": "",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+};

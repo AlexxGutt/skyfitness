@@ -1,0 +1,145 @@
+.container {
+  min-height: calc(100vh - 140px);
+  background: #fafafa;
+  padding: 60px 140px;
+}
+
+.content {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.title {
+  width: 810px;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 110%;
+  margin-bottom: 40px;
+  color: #000;
+}
+
+.videoFrame {
+  width: 1160px;
+  height: 639px;
+  border-radius: 30px;
+  border: none;
+  margin-bottom: 40px;
+}
+
+.exercisesCard {
+  width: 1160px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  background: #fff;
+}
+
+.exercisesBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.exercisesTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+.exercisesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 60px 60px;
+}
+
+.exerciseItem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exerciseName {
+  font-size: 18px;
+  font-weight: 400;
+  color: #000;
+  height: 20px;
+}
+
+.progressBar {
+  width: 320px;
+  height: 6px;
+  border-radius: 50px;
+  background: #f7f7f7;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #bcec30;
+  transition: width 0.3s ease;
+}
+
+.fillButton {
+  width: 320px;
+  height: 52px;
+  padding: 16px 26px;
+  border-radius: 46px;
+  background: #bcec30;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fillButton:hover {
+  background: #c6ff00;
+}
+
+.fillButton:active {
+  background: #000;
+  color: #fff;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 40px 20px;
+  }
+
+  .title {
+    width: 100%;
+    font-size: 32px;
+  }
+
+  .videoFrame {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .exercisesCard {
+    width: 100%;
+  }
+
+  .exercisesList {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .exerciseItem,
+  .exerciseName,
+  .progressBar,
+  .fillButton {
+    width: 100%;
+  }
+}

@@ -4,12 +4,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type initialStateType = {
   allCourses: CourseType[];
   usersCourse: UserType | null;
+  currentCourse: CourseType | null;
   isLoading: boolean;
   error: null | string;
 };
+
 const initialState: initialStateType = {
   usersCourse: null,
   allCourses: [],
+  currentCourse: null,
   isLoading: false,
   error: null,
 };
@@ -24,6 +27,9 @@ const courseSlice = createSlice({
     },
     setUsersCourse: (state, action: PayloadAction<UserType>) => {
       state.usersCourse = action.payload;
+    },
+    setCurrentCourse: (state, action: PayloadAction<CourseType>) => {
+      state.currentCourse = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -44,5 +50,6 @@ export const {
   setLoading,
   clearError,
   setUsersCourse,
+  setCurrentCourse,
 } = courseSlice.actions;
 export const courseSliceReducer = courseSlice.reducer;

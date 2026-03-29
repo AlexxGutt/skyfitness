@@ -11,7 +11,7 @@ import { Workout } from "@/components/Modal/WorkoutModal";
 import styles from "./page.module.css";
 import { useEffect, useState, useCallback } from "react";
 import { getUsersCourse } from "@/service/api/apiCourse";
-import { setUsersCourse } from "@/store/features/courseSlice";
+import { setCurrentCourse, setUsersCourse } from "@/store/features/courseSlice";
 import { getCourseWorkout } from "@/service/api/apiWorkout";
 import { useSortWorkouts } from "@/hooks/useSortWorkouts";
 
@@ -24,6 +24,7 @@ const ProfilePage = () => {
     {},
   );
   const { sortWorkouts } = useSortWorkouts();
+  const { allCourses } = useAppSelector((state) => state.courses);
 
   // Состояния для модального окна
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
@@ -63,6 +64,12 @@ const ProfilePage = () => {
 
   const handleStartCourse = async (courseId: string) => {
     if (!access) return;
+
+    const course = allCourses.find((c) => c._id === courseId);
+    if (course) {
+      dispatch(setCurrentCourse(course));
+    }
+
     getCourseWorkout(access, courseId)
       .then((res) => {
         const sorted = sortWorkouts(res.data);
@@ -76,8 +83,7 @@ const ProfilePage = () => {
   };
 
   const handleStartWorkout = (workoutId: string) => {
-    console.log("Начинаем тренировку:", workoutId);
-    // TODO: Переход на страницу тренировки
+    router.push(`/workout/${workoutId}`);
     setIsWorkoutModalOpen(false);
   };
 
