@@ -7,6 +7,7 @@ import {
 } from "@/store/features/authSlice";
 import { useAppDispatch } from "@/store/store";
 import { useEffect } from "react";
+import { setHydrated } from "@/store/features/authSlice";
 
 const InitAuth = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,7 @@ const InitAuth = () => {
     dispatch(setUsername(username || ""));
     dispatch(setUserEmail(email || ""));
     dispatch(setAccess(access || ""));
+    dispatch(setHydrated());
   }, [dispatch]);
 
   return <></>;

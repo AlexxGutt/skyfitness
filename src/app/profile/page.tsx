@@ -18,7 +18,9 @@ import { useSortWorkouts } from "@/hooks/useSortWorkouts";
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { username, email, access } = useAppSelector((state) => state.auth);
+  const { username, email, access, isHydrated } = useAppSelector(
+    (state) => state.auth,
+  );
   const [refreshKey, setRefreshKey] = useState(0);
   const [courseProgress, setCourseProgress] = useState<Record<string, number>>(
     {},
@@ -92,10 +94,10 @@ const ProfilePage = () => {
   );
 
   useEffect(() => {
-    if (!access) {
+    if (isHydrated && !access) {
       router.replace("/");
     }
-  }, [access, router]);
+  }, [access, router, isHydrated]);
 
   return (
     <>
