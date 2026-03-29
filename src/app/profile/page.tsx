@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header/Header";
 import CardItems from "@/components/CardItems/CardItems";
 import WorkoutModal from "@/components/Modal/WorkoutModal";
+import { Workout } from "@/components/Modal/WorkoutModal";
 import styles from "./page.module.css";
 import { useEffect, useState, useCallback } from "react";
 import { getUsersCourse } from "@/service/api/apiCourse";
 import { setUsersCourse } from "@/store/features/courseSlice";
+import { getCourseWorkout } from "@/service/api/apiWorkout";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -23,16 +25,7 @@ const ProfilePage = () => {
 
   // Состояния для модального окна
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<{
-    id: string;
-    name: string;
-    workouts: {
-      id: string;
-      name: string;
-      description: string;
-      completed: boolean;
-    }[];
-  } | null>(null);
+  const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]); // ← убрали any, добавили тип Workout[]
 
   const fetchUserData = useCallback(() => {
     if (access) {
@@ -40,7 +33,6 @@ const ProfilePage = () => {
         .then((res) => {
           dispatch(setUsersCourse(res.data.user));
 
-          // Здесь нужно будет вычислить прогресс из courseProgress
           const progress: Record<string, number> = {};
           res.data.user.selectedCourses?.forEach((courseId: string) => {
             progress[courseId] = 40;
@@ -67,38 +59,20 @@ const ProfilePage = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
-  const handleStartCourse = (courseId: string) => {
-    // TODO: Получить тренировки курса из API
-    // Пока заглушка
-    const mockWorkouts = [
-      {
-        id: "1",
-        name: "Утренняя практика",
-        description: "Йога на каждый день / 1 день",
-        completed: false,
-      },
-      {
-        id: "2",
-        name: "Дневная практика",
-        description: "Йога на каждый день / 2 день",
-        completed: true,
-      },
-      {
-        id: "3",
-        name: "Вечерняя практика",
-        description: "Йога на каждый день / 3 день",
-        completed: false,
-      },
-    ];
-
-    setSelectedCourse({
-      id: courseId,
-      name: "Йога",
-      workouts: mockWorkouts,
-    });
-    setIsWorkoutModalOpen(true);
+  const handleStartCourse = async (courseId: string) => {
+    if (!access) return;
+    getCourseWorkout(access, courseId)
+      .then((res) => {
+        console.log(res);
+        const response = res.data;
+        setSelectedWorkouts(response);
+        setIsWorkoutModalOpen(true);
+      })
+      .catch((err) => {
+        const error = err.response.data.message;
+        alert(error);
+      });
   };
-
   const handleStartWorkout = (workoutId: string) => {
     console.log("Начинаем тренировку:", workoutId);
     // TODO: Переход на страницу тренировки
@@ -158,15 +132,12 @@ const ProfilePage = () => {
         </div>
       </main>
 
-      {selectedCourse && (
-        <WorkoutModal
-          isOpen={isWorkoutModalOpen}
-          onClose={() => setIsWorkoutModalOpen(false)}
-          workouts={selectedCourse.workouts}
-          courseName={selectedCourse.name}
-          onStartWorkout={handleStartWorkout}
-        />
-      )}
+      <WorkoutModal
+        isOpen={isWorkoutModalOpen}
+        onClose={() => setIsWorkoutModalOpen(false)}
+        workouts={selectedWorkouts}
+        onStartWorkout={handleStartWorkout}
+      />
     </>
   );
 };

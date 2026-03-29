@@ -3,29 +3,33 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import styles from "./workoutModal.module.css";
+import { parseWorkoutName } from "@/hooks/parseWorkoutName";
 
 export type Workout = {
-  id: string;
+  _id: string;
   name: string;
-  description: string;
-  completed: boolean;
+  video: string;
+  exercises?: Array<{
+    name: string;
+    quantity: number;
+    _id: string;
+  }>;
+  __v?: number;
 };
 
 type WorkoutModalProps = {
   isOpen: boolean;
   onClose: () => void;
   workouts: Workout[];
-  courseName: string;
   onStartWorkout?: (workoutId: string) => void;
 };
 
 const WorkoutModal: React.FC<WorkoutModalProps> = ({
   isOpen,
   onClose,
-  workouts,
+  workouts = [],
   onStartWorkout,
 }) => {
-  // Закрытие по Escape
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -37,6 +41,10 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   }, [onClose]);
 
   if (!isOpen) return null;
+
+  // Отладка
+  console.log("Workouts in modal:", workouts);
+  console.log("Workouts count:", workouts.length);
 
   const handleWorkoutClick = (workoutId: string) => {
     if (onStartWorkout) {
@@ -56,47 +64,41 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
           <h2 className={styles.title}>Выберите тренировку</h2>
 
           <div className={styles.workoutsList}>
-            {workouts.map((workout, index) => (
-              <React.Fragment key={workout.id}>
-                <div
-                  className={styles.workoutItem}
-                  onClick={() => handleWorkoutClick(workout.id)}
-                >
-                  <div className={styles.checkbox}>
-                    <Image
-                      src={
-                        workout.completed
-                          ? "/Check-in-Circle.svg"
-                          : "/Check-in-Circle-Empty.svg"
-                      }
-                      alt={workout.completed ? "Пройдено" : "Не пройдено"}
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                  <div className={styles.workoutInfo}>
-                    <div className={styles.workoutName}>{workout.name}</div>
-                    <div className={styles.workoutDescription}>
-                      {workout.description}
+            {workouts.map((workout) => {
+              const { name, description } = parseWorkoutName(workout.name);
+              return (
+                <React.Fragment key={workout._id}>
+                  <div
+                    className={styles.workoutItem}
+                    onClick={() => handleWorkoutClick(workout._id)}
+                  >
+                    <div className={styles.checkbox}>
+                      <Image
+                        src="/Check-in-Circle-Empty.svg"
+                        alt="Не пройдено"
+                        width={24}
+                        height={24}
+                      />
+                    </div>
+                    <div className={styles.workoutInfo}>
+                      <div className={styles.workoutName}>{name}</div>
+                      <div className={styles.workoutDescription}>
+                        {description}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {index < workouts.length - 1 && (
+                  {/* Линия после каждого элемента, включая последний */}
                   <div className={styles.divider} />
-                )}
-              </React.Fragment>
-            ))}
+                </React.Fragment>
+              );
+            })}
           </div>
 
           <button
             className={styles.startButton}
             onClick={() => {
-              // Найти первую непройденную тренировку или первую в списке
-              const firstIncomplete = workouts.find((w) => !w.completed);
-              if (firstIncomplete) {
-                handleWorkoutClick(firstIncomplete.id);
-              } else if (workouts.length > 0) {
-                handleWorkoutClick(workouts[0].id);
+              if (workouts.length > 0) {
+                handleWorkoutClick(workouts[0]._id);
               }
             }}
           >
