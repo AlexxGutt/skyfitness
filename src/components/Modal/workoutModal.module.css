@@ -73,35 +73,37 @@
 
 .workoutsList {
   width: 100%;
-  height: 300px;
+  max-height: 300px;
   display: flex;
   flex-direction: column;
   gap: 0;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
-.workoutsList::-webkit-scrollbar {
+.scrollContainer {
+  width: 100%;
+  position: relative;
+}
+
+.workoutsList {
+  padding-right: 14px;
+}
+
+.scrollTrack {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 6px;
-}
-
-.workoutsList::-webkit-scrollbar-track {
+  height: 300px;
   background: #f0f0f0;
   border-radius: 10px;
 }
 
-.workoutsListW::-webkit-scrollbar-thumb {
+.scrollThumb {
+  position: absolute;
+  width: 6px;
   background: #000000;
   border-radius: 10px;
-}
-
-.workoutsList::-webkit-scrollbar-thumb:hover {
-  background: #333;
-}
-
-/* Для Firefox */
-.workoutsList {
-  scrollbar-width: thin;
-  scrollbar-color: #000000 #f0f0f0;
 }
 
 .workoutItem {
@@ -155,7 +157,7 @@
 }
 
 .divider {
-  width: 100%;
+  width: 98%;
   height: 0;
   border: 1px solid rgba(196, 196, 196, 1);
 }

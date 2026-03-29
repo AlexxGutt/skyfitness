@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import styles from "./workoutModal.module.css";
 import { parseWorkoutName } from "@/hooks/parseWorkoutName";
+import { useCustomScroll } from "@/hooks/useCustomScroll";
 
 export type Workout = {
   _id: string;
@@ -30,6 +31,9 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   workouts = [],
   onStartWorkout,
 }) => {
+  const { listRef, thumbRef, thumbTop, thumbHeight, visible } =
+    useCustomScroll(workouts);
+
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -41,10 +45,6 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   }, [onClose]);
 
   if (!isOpen) return null;
-
-  // Отладка
-  console.log("Workouts in modal:", workouts);
-  console.log("Workouts count:", workouts.length);
 
   const handleWorkoutClick = (workoutId: string) => {
     if (onStartWorkout) {
@@ -63,35 +63,45 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
 
           <h2 className={styles.title}>Выберите тренировку</h2>
 
-          <div className={styles.workoutsList}>
-            {workouts.map((workout) => {
-              const { name, description } = parseWorkoutName(workout.name);
-              return (
-                <React.Fragment key={workout._id}>
-                  <div
-                    className={styles.workoutItem}
-                    onClick={() => handleWorkoutClick(workout._id)}
-                  >
-                    <div className={styles.checkbox}>
-                      <Image
-                        src="/Check-in-Circle-Empty.svg"
-                        alt="Не пройдено"
-                        width={24}
-                        height={24}
-                      />
-                    </div>
-                    <div className={styles.workoutInfo}>
-                      <div className={styles.workoutName}>{name}</div>
-                      <div className={styles.workoutDescription}>
-                        {description}
+          <div className={styles.scrollContainer}>
+            <div ref={listRef} className={styles.workoutsList}>
+              {workouts.map((workout) => {
+                const { name, description } = parseWorkoutName(workout.name);
+                return (
+                  <React.Fragment key={workout._id}>
+                    <div
+                      className={styles.workoutItem}
+                      onClick={() => handleWorkoutClick(workout._id)}
+                    >
+                      <div className={styles.checkbox}>
+                        <Image
+                          src="/Check-in-Circle-Empty.svg"
+                          alt="Не пройдено"
+                          width={24}
+                          height={24}
+                        />
+                      </div>
+                      <div className={styles.workoutInfo}>
+                        <div className={styles.workoutName}>{name}</div>
+                        <div className={styles.workoutDescription}>
+                          {description}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* Линия после каждого элемента, включая последний */}
-                  <div className={styles.divider} />
-                </React.Fragment>
-              );
-            })}
+                    <div className={styles.divider} />
+                  </React.Fragment>
+                );
+              })}
+            </div>
+            {visible && (
+              <div className={styles.scrollTrack}>
+                <div
+                  ref={thumbRef}
+                  className={styles.scrollThumb}
+                  style={{ height: thumbHeight, top: thumbTop }}
+                />
+              </div>
+            )}
           </div>
 
           <button

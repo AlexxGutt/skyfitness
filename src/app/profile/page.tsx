@@ -13,6 +13,7 @@ import { useEffect, useState, useCallback } from "react";
 import { getUsersCourse } from "@/service/api/apiCourse";
 import { setUsersCourse } from "@/store/features/courseSlice";
 import { getCourseWorkout } from "@/service/api/apiWorkout";
+import { useSortWorkouts } from "@/hooks/useSortWorkouts";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ const ProfilePage = () => {
   const [courseProgress, setCourseProgress] = useState<Record<string, number>>(
     {},
   );
+  const { sortWorkouts } = useSortWorkouts();
 
   // Состояния для модального окна
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
@@ -63,9 +65,8 @@ const ProfilePage = () => {
     if (!access) return;
     getCourseWorkout(access, courseId)
       .then((res) => {
-        console.log(res);
-        const response = res.data;
-        setSelectedWorkouts(response);
+        const sorted = sortWorkouts(res.data);
+        setSelectedWorkouts(sorted);
         setIsWorkoutModalOpen(true);
       })
       .catch((err) => {
@@ -73,6 +74,7 @@ const ProfilePage = () => {
         alert(error);
       });
   };
+
   const handleStartWorkout = (workoutId: string) => {
     console.log("Начинаем тренировку:", workoutId);
     // TODO: Переход на страницу тренировки
