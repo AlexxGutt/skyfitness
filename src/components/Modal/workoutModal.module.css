@@ -114,7 +114,27 @@
   align-items: center;
   gap: 15px;
   cursor: pointer;
-  padding: 10px 0;
+  padding: 10px;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.workoutItem:hover {
+  background-color: #f5f5f5;
+}
+
+.workoutItem.selected {
+  background-color: #bcec30;
+}
+
+.startButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.startButton:disabled:hover {
+  background: #ccc;
+  box-shadow: none;
 }
 
 .checkbox {

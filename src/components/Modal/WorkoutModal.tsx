@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./workoutModal.module.css";
 import { parseWorkoutName } from "@/hooks/parseWorkoutName";
@@ -31,6 +31,9 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   workouts = [],
   onStartWorkout,
 }) => {
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(
+    null,
+  );
   const { listRef, thumbRef, thumbTop, thumbHeight, visible } =
     useCustomScroll(workouts);
 
@@ -47,8 +50,12 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   if (!isOpen) return null;
 
   const handleWorkoutClick = (workoutId: string) => {
-    if (onStartWorkout) {
-      onStartWorkout(workoutId);
+    setSelectedWorkoutId(workoutId);
+  };
+
+  const handleStartClick = () => {
+    if (selectedWorkoutId && onStartWorkout) {
+      onStartWorkout(selectedWorkoutId);
     }
   };
 
@@ -67,10 +74,11 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
             <div ref={listRef} className={styles.workoutsList}>
               {workouts.map((workout) => {
                 const { name, description } = parseWorkoutName(workout.name);
+                const isSelected = selectedWorkoutId === workout._id;
                 return (
                   <React.Fragment key={workout._id}>
                     <div
-                      className={styles.workoutItem}
+                      className={`${styles.workoutItem} ${isSelected ? styles.selected : ""}`}
                       onClick={() => handleWorkoutClick(workout._id)}
                     >
                       <div className={styles.checkbox}>
@@ -106,11 +114,8 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
 
           <button
             className={styles.startButton}
-            onClick={() => {
-              if (workouts.length > 0) {
-                handleWorkoutClick(workouts[0]._id);
-              }
-            }}
+            onClick={handleStartClick}
+            disabled={!selectedWorkoutId}
           >
             Начать
           </button>
