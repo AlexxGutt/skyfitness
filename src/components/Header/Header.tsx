@@ -11,7 +11,7 @@ import styles from "./header.module.css";
 
 const Header = () => {
   const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
-  const { access, username } = useAppSelector((state) => state.auth);
+  const { access, username, email } = useAppSelector((state) => state.auth);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -26,12 +26,10 @@ const Header = () => {
     setIsDropdownOpen(false);
   };
 
-  // Закрытие при клике вне меню и вне кнопки
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
 
-      // Проверяем, был ли клик вне меню и вне кнопки
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(target) &&
@@ -82,12 +80,18 @@ const Header = () => {
                 onClick={toggleDropdown}
               >
                 <div className={styles.avatar}>
-                  <Image
-                    src="/Profile.svg"
-                    alt="Профиль"
-                    width={50}
-                    height={50}
-                  />
+                  {email ? (
+                    <div className={styles.avatarInitial}>
+                      {email.charAt(0).toUpperCase()}
+                    </div>
+                  ) : (
+                    <Image
+                      src="/Profile.svg"
+                      alt="Профиль"
+                      width={50}
+                      height={50}
+                    />
+                  )}
                 </div>
                 <span className={styles.userName}>
                   {username || "Пользователь"}

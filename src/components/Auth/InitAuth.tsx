@@ -4,10 +4,10 @@ import {
   setAccess,
   setUserEmail,
   setUsername,
+  setHydrated,
 } from "@/store/features/authSlice";
 import { useAppDispatch } from "@/store/store";
 import { useEffect } from "react";
-import { setHydrated } from "@/store/features/authSlice";
 
 const InitAuth = () => {
   const dispatch = useAppDispatch();
@@ -17,9 +17,9 @@ const InitAuth = () => {
     const email = localStorage.getItem("email");
     const username = localStorage.getItem("username");
 
-    dispatch(setUsername(username || ""));
-    dispatch(setUserEmail(email || ""));
-    dispatch(setAccess(access || ""));
+    if (username) dispatch(setUsername(username));
+    if (email) dispatch(setUserEmail(email));
+    if (access) dispatch(setAccess(access));
     dispatch(setHydrated());
   }, [dispatch]);
 

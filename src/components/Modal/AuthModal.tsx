@@ -9,6 +9,7 @@ import {
   setAccess,
   setError,
   setUserEmail,
+  setUsername,
 } from "@/store/features/authSlice";
 import { getSignIn, getSignUp } from "@/service/api/apiAuth";
 
@@ -73,7 +74,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
         })
         .catch((err) => {
           const errMessage = err.response?.data?.message;
-          console.log("Ошибка входа:", errMessage); // 👈 Посмотри ответ сервера
+          console.log("Ошибка регистрации:", errMessage);
           dispatch(setError(errMessage));
         });
     } else {
@@ -82,16 +83,18 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
           console.log("Вход успешен:", res.data);
           dispatch(setAccess(res.data.token));
           dispatch(setUserEmail(email));
+          dispatch(setUsername(email.split("@")[0]));
           dispatch(clearError());
           onClose();
         })
         .catch((err) => {
           const errMessage = err.response?.data?.message;
-          console.log("Ошибка входа:", errMessage); // 👈 Посмотри ответ сервера
+          console.log("Ошибка входа:", errMessage);
           dispatch(setError(errMessage));
         });
     }
   };
+
   if (!isOpen) return null;
 
   return (

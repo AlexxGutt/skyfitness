@@ -108,13 +108,19 @@ const ProfilePage = () => {
 
           <div className={styles.profileCard}>
             <div className={styles.avatarWrapper}>
-              <Image
-                src="/Mask group.svg"
-                alt="Аватар"
-                width={197}
-                height={197}
-                className={styles.avatar}
-              />
+              {access && email ? (
+                <div className={styles.avatarInitial}>
+                  {email.charAt(0).toUpperCase()}
+                </div>
+              ) : (
+                <Image
+                  src="/Mask group.svg"
+                  alt="Аватар"
+                  width={197}
+                  height={197}
+                  className={styles.avatar}
+                />
+              )}
             </div>
 
             <div className={styles.userInfo}>
