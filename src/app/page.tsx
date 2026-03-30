@@ -10,7 +10,7 @@ export default function Home() {
       <Header />
       <main className={styles.main}>
         <Title />
-        <CardItems /> {/* ← type не передаем, по умолчанию "all" */}
+        <CardItems />
         <div className={styles.buttonContainer}>
           <ButtonUpToTop />
         </div>

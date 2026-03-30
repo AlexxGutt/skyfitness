@@ -1,10 +1,12 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/store/store";
-import { clearUser } from "@/store/features/authSlice";
+import { setLoading } from "@/store/features/loaderSlice";
+import { useLogout } from "@/hooks/useLogout";
 import styles from "./userModal.module.css";
+import GlobalLoader from "../Loader/GlobalLoader";
 
 type ProfileDropdownProps = {
   isOpen: boolean;
@@ -13,13 +15,29 @@ type ProfileDropdownProps = {
 
 const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { logout } = useLogout();
   const { username, email } = useAppSelector((state) => state.auth);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
-    dispatch(clearUser());
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+
+    await logout({
+      redirectTo: "/",
+    });
+
+    setIsLoggingOut(false);
+    onClose();
   };
 
-  // Предотвращаем закрытие при клике внутри дропдауна
+  const handleProfileClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(setLoading(true));
+    onClose();
+    router.push("/profile");
+  };
+
   const handleDropdownClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -27,25 +45,28 @@ const ProfileDropdown = ({ isOpen, onClose }: ProfileDropdownProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className={styles.dropdown} onClick={handleDropdownClick}>
-      <div className={styles.userInfo}>
-        <div className={styles.userName}>{username || "Пользователь"}</div>
-        <div className={styles.userEmail}>{email || "email@example.com"}</div>
-      </div>
+    <>
+      {isLoggingOut && <GlobalLoader />}
+      <div className={styles.dropdown} onClick={handleDropdownClick}>
+        <div className={styles.userInfo}>
+          <div className={styles.userName}>{username || "Пользователь"}</div>
+          <div className={styles.userEmail}>{email || "email@example.com"}</div>
+        </div>
 
-      <div className={styles.buttonsContainer}>
-        <Link
-          href="/profile"
-          className={styles.profileButton}
-          onClick={onClose}
-        >
-          Мой профиль
-        </Link>
-        <button className={styles.logoutButton} onClick={handleLogout}>
-          Выйти
-        </button>
+        <div className={styles.buttonsContainer}>
+          <button className={styles.profileButton} onClick={handleProfileClick}>
+            Мой профиль
+          </button>
+          <button
+            className={styles.logoutButton}
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ? "Выход..." : "Выйти"}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

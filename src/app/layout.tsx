@@ -4,6 +4,8 @@ import "./globals.css";
 import ReduxProvider from "@/store/ReduxProvider";
 import InitAuth from "@/components/Auth/InitAuth";
 import FetchingCourses from "@/components/FetchingCourse/FetchingCourse";
+import GlobalLoader from "@/components/Loader/GlobalLoader";
+import { BackButtonGuard } from "@/components/Buttons/BackButtonGuard";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
@@ -27,6 +29,8 @@ export default function RootLayout({
     <ReduxProvider>
       <html lang="ru" className={roboto.variable}>
         <body className={roboto.className}>
+          <BackButtonGuard />
+          <GlobalLoader />
           <FetchingCourses />
           <InitAuth />
           {children}

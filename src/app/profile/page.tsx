@@ -9,13 +9,14 @@ import CardItems from "@/components/CardItems/CardItems";
 import WorkoutModal from "@/components/Modal/WorkoutModal";
 import { Workout } from "@/components/Modal/WorkoutModal";
 import styles from "./page.module.css";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { getUsersCourse } from "@/service/api/apiCourse";
 import { setCurrentCourse, setUsersCourse } from "@/store/features/courseSlice";
 import { getCourseWorkout } from "@/service/api/apiWorkout";
 import { useSortWorkouts } from "@/hooks/useSortWorkouts";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
+import { setLoading } from "@/store/features/loaderSlice";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -23,13 +24,14 @@ const ProfilePage = () => {
   const { username, email, access, isHydrated } = useAppSelector(
     (state) => state.auth,
   );
-  const { currentCourse } = useAppSelector((state) => state.courses);
+  const { currentCourse, usersCourse, allCourses } = useAppSelector(
+    (state) => state.courses,
+  );
   const [refreshKey, setRefreshKey] = useState(0);
   const [courseProgress, setCourseProgress] = useState<Record<string, number>>(
     {},
   );
   const { sortWorkouts } = useSortWorkouts();
-  const { allCourses } = useAppSelector((state) => state.courses);
 
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
@@ -37,6 +39,14 @@ const ProfilePage = () => {
     isOpen: boolean;
     message: string;
   }>({ isOpen: false, message: "" });
+
+  const selectedCourseIds = useMemo(() => {
+    return usersCourse?.selectedCourses || [];
+  }, [usersCourse?.selectedCourses]);
+
+  useEffect(() => {
+    dispatch(setLoading(false));
+  }, [dispatch]);
 
   const showNotification = (message: string) => {
     setNotification({ isOpen: true, message });
@@ -105,10 +115,6 @@ const ProfilePage = () => {
     setIsWorkoutModalOpen(false);
   };
 
-  const selectedCourseIds = useAppSelector(
-    (state) => state.courses.usersCourse?.selectedCourses || [],
-  );
-
   useEffect(() => {
     if (isHydrated && !access) {
       router.replace("/");
@@ -135,6 +141,7 @@ const ProfilePage = () => {
                   width={197}
                   height={197}
                   className={styles.avatar}
+                  loading="eager"
                 />
               )}
             </div>

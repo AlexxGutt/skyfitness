@@ -13,6 +13,7 @@ import {
 import { getSignIn, getSignUp } from "@/service/api/apiAuth";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
+import { setLoading } from "@/store/features/loaderSlice";
 
 export type AuthModalProps = {
   isOpen: boolean;
@@ -86,6 +87,8 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
       return;
     }
 
+    dispatch(setLoading(true));
+
     const data = { email, password };
 
     if (isSignUp) {
@@ -102,6 +105,9 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
             ? err.response?.data?.message || "Ошибка регистрации"
             : "Ошибка регистрации";
           setError(errMessage);
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
         });
     } else {
       getSignIn(data)
@@ -116,6 +122,9 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
             ? err.response?.data?.message || "Ошибка входа"
             : "Ошибка входа";
           setError(errMessage);
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
         });
     }
   };

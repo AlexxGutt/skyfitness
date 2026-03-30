@@ -5,7 +5,9 @@ import Image from "next/image";
 import styles from "./workoutModal.module.css";
 import { parseWorkoutName } from "@/hooks/parseWorkoutName";
 import { useCustomScroll } from "@/hooks/useCustomScroll";
-import { useAppSelector } from "@/store/store";
+import { useAppSelector, useAppDispatch } from "@/store/store";
+import { setLoading } from "@/store/features/loaderSlice";
+import GlobalLoader from "@/components/Loader/GlobalLoader";
 
 export type Workout = {
   _id: string;
@@ -34,9 +36,11 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   onStartWorkout,
   courseId,
 }) => {
+  const dispatch = useAppDispatch();
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(
     null,
   );
+  const [isStarting, setIsStarting] = useState(false);
   const { usersCourse } = useAppSelector((state) => state.courses);
   const { listRef, thumbRef, thumbTop, thumbHeight, visible } = useCustomScroll(
     workouts,
@@ -60,24 +64,37 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   if (!isOpen) return null;
 
   const handleWorkoutClick = (workoutId: string) => {
-    setSelectedWorkoutId(workoutId);
+    if (!isStarting) {
+      setSelectedWorkoutId(workoutId);
+    }
   };
 
-  const handleStartClick = () => {
-    if (selectedWorkoutId && onStartWorkout) {
-      onStartWorkout(selectedWorkoutId);
+  const handleStartClick = async () => {
+    if (selectedWorkoutId && onStartWorkout && !isStarting) {
+      setIsStarting(true);
+      dispatch(setLoading(true));
+
+      try {
+        await onStartWorkout(selectedWorkoutId);
+        onClose();
+      } catch (error) {
+        console.error("Error starting workout:", error);
+      } finally {
+        setIsStarting(false);
+        dispatch(setLoading(false));
+      }
     }
   };
 
   return (
     <>
-      <div className={styles.overlay} onClick={onClose} />
+      {isStarting && <GlobalLoader />}
+      <div
+        className={styles.overlay}
+        onClick={!isStarting ? onClose : undefined}
+      />
       <div className={styles.modal}>
         <div className={styles.modalContent}>
-          <button className={styles.closeButton} onClick={onClose}>
-            ×
-          </button>
-
           <h2 className={styles.title}>Выберите тренировку</h2>
 
           <div className={styles.scrollContainer}>
@@ -95,7 +112,7 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
                 return (
                   <React.Fragment key={workout._id}>
                     <div
-                      className={`${styles.workoutItem} ${isSelected ? styles.selected : ""}`}
+                      className={`${styles.workoutItem} ${isSelected ? styles.selected : ""} ${isStarting ? styles.disabled : ""}`}
                       onClick={() => handleWorkoutClick(workout._id)}
                     >
                       <div className={styles.checkbox}>
@@ -132,9 +149,9 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
           <button
             className={styles.startButton}
             onClick={handleStartClick}
-            disabled={!selectedWorkoutId}
+            disabled={!selectedWorkoutId || isStarting}
           >
-            Начать
+            {isStarting ? "Загрузка..." : "Начать"}
           </button>
         </div>
       </div>

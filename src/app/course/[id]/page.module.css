@@ -13,7 +13,6 @@
   padding: 50px 140;
 }
 
-/* Блок с фоном */
 .heroBlock {
   width: 100%;
   max-width: 1160px;
@@ -63,7 +62,6 @@
   object-fit: contain;
 }
 
-/* Заголовок секции */
 .sectionTitle {
   width: 100%;
   max-width: 810px;
@@ -78,7 +76,6 @@
   margin: 0 0 40px 0;
 }
 
-/* Сетка с карточками преимуществ */
 .benefitsGrid {
   display: flex;
   flex-direction: row;
@@ -91,10 +88,10 @@
 .benefitCard {
   width: 368px;
   display: flex;
-  flex-direction: row; /* ← меняем на row */
+  flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 25px; /* ← отступ между цифрой и текстом */
+  gap: 25px;
   padding: 20px;
   border-radius: 28px;
   background: linear-gradient(
@@ -107,7 +104,7 @@
 
 .benefitNumber {
   width: 35px;
-  flex-shrink: 0; /* ← чтобы цифра не сжималась */
+  flex-shrink: 0;
   color: #bcec30;
   font-family: "Roboto", sans-serif;
   font-style: normal;
@@ -137,9 +134,7 @@
   font-size: 18px;
   color: #666;
 }
-/* Добавить в конец файла */
 
-/* Заголовок "Направления" */
 .directionsTitle {
   width: 100%;
   max-width: 810px;
@@ -154,7 +149,6 @@
   margin: 60px 0 40px 0;
 }
 
-/* Блок с направлениями */
 .directionsBlock {
   width: 100%;
   max-width: 1160px;
@@ -193,7 +187,7 @@
   text-align: left;
   color: #000000;
 }
-/* Блок "Начните путь к новому телу" */
+
 .callToAction {
   width: 100%;
   max-width: 1160px;
@@ -203,7 +197,7 @@
   background: #ffffff;
   position: relative;
   margin-top: 102px;
-  overflow: visible; /* ← позволяем контенту выходить за пределы */
+  overflow: visible;
 }
 
 .ctaContent {
@@ -297,7 +291,6 @@
   color: #ffffff;
 }
 
-/* Декоративные изображения */
 .ctaImages {
   position: relative;
   width: 100%;
@@ -324,7 +317,7 @@
   height: 540px;
   transform: rotate(-2.99deg);
   pointer-events: none;
-  z-index: 10; /* ← выше, чтобы быть поверх зеленого */
+  z-index: 10;
 }
 
 .ctaImageBlack {
