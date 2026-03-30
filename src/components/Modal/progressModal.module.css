@@ -156,6 +156,45 @@
   }
 }
 
+.videoQuestion {
+  font-family: "Roboto", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #000;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.videoButtons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.videoOption {
+  width: 120px;
+  height: 48px;
+  border: 2px solid #d9d9d9;
+  border-radius: 46px;
+  background: #fff;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.videoOption:hover {
+  border-color: #bcec30;
+}
+
+.videoOptionActive {
+  background: #bcec30;
+  border-color: #bcec30;
+}
+
 @media (max-width: 480px) {
   .modalContent {
     width: calc(100vw - 32px);

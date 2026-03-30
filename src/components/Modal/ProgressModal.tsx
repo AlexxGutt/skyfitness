@@ -15,6 +15,7 @@ type ProgressModalProps = {
   isOpen: boolean;
   onClose: () => void;
   exercises: Exercise[];
+  isVideoOnly?: boolean;
   onSave?: (progress: Record<string, number>) => void;
 };
 
@@ -22,9 +23,11 @@ const ProgressModal: React.FC<ProgressModalProps> = ({
   isOpen,
   onClose,
   exercises,
+  isVideoOnly = false,
   onSave,
 }) => {
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const [videoWatched, setVideoWatched] = useState(false);
   const { parseExerciseName } = useParseExerciseName();
 
   const { listRef, thumbRef, thumbTop, thumbHeight, visible } = useCustomScroll(
@@ -47,13 +50,51 @@ const ProgressModal: React.FC<ProgressModalProps> = ({
   };
 
   const handleSave = () => {
+    if (isVideoOnly) {
+      onSave?.({ video: videoWatched ? 100 : 0 });
+      setVideoWatched(false);
+      return;
+    }
+
     const progress: Record<string, number> = {};
     exercises.forEach((exercise) => {
       const value = parseInt(inputValues[exercise._id] || "0", 10);
       progress[exercise._id] = Math.min(value, exercise.quantity);
     });
     onSave?.(progress);
+    setInputValues({});
   };
+
+  if (isVideoOnly) {
+    return (
+      <>
+        <div className={styles.overlay} onClick={onClose} />
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h2 className={styles.title}>Мой прогресс</h2>
+            <div className={styles.videoQuestion}>Вы посмотрели видеоурок?</div>
+            <div className={styles.videoButtons}>
+              <button
+                className={`${styles.videoOption} ${videoWatched ? styles.videoOptionActive : ""}`}
+                onClick={() => setVideoWatched(true)}
+              >
+                Да
+              </button>
+              <button
+                className={`${styles.videoOption} ${!videoWatched ? styles.videoOptionActive : ""}`}
+                onClick={() => setVideoWatched(false)}
+              >
+                Нет
+              </button>
+            </div>
+            <button className={styles.saveButton} onClick={handleSave}>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

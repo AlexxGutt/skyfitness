@@ -29,19 +29,19 @@ export interface AuthType {
   password: string;
 }
 
-export interface WorkoutProgress {
-  workoutId: string;
-  workoutCompleted: boolean;
-  progressData: number[];
-  _id: string;
-}
-
-export interface CourseProgress {
+export type CourseProgress = {
   courseId: string;
   courseCompleted: boolean;
   workoutsProgress: WorkoutProgress[];
   _id: string;
-}
+};
+
+export type WorkoutProgress = {
+  workoutId: string;
+  workoutCompleted: boolean;
+  progressData: number[];
+  _id: string;
+};
 
 export interface UserType {
   _id: string;
