@@ -22,6 +22,8 @@ import {
   setCurrentProgressWorkout,
 } from "@/store/features/courseSlice";
 import { CourseProgress, WorkoutProgress } from "@/sharedTypes/sharedTypes";
+import NotificationModal from "@/components/Modal/NotificationModal";
+import axios from "axios";
 
 const WorkoutPage = () => {
   useRestoreCurrentCourse();
@@ -41,6 +43,10 @@ const WorkoutPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({ isOpen: false, message: "" });
 
   const isVideoOnly =
     !currentWorkout?.exercises || currentWorkout.exercises.length === 0;
@@ -88,9 +94,14 @@ const WorkoutPage = () => {
       .finally(() => setLoading(false));
   }, [access, id, currentCourse, usersCourse, dispatch]);
 
+  const showNotification = (message: string) => {
+    setNotification({ isOpen: true, message });
+    setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
+  };
+
   const handleFillProgress = async () => {
     if (!access) {
-      alert("Авторизуйтесь");
+      showNotification("Авторизуйтесь");
       return;
     }
 
@@ -101,9 +112,12 @@ const WorkoutPage = () => {
       try {
         await clearProgressWorkout(access, currentCourse._id, workoutId);
         dispatch(setCurrentProgressWorkout({ video: 0 }));
+        showNotification("Прогресс очищен");
       } catch (err) {
-        console.error("Failed to clear progress:", err);
-        alert("Ошибка при сбросе прогресса");
+        const errorMessage = axios.isAxiosError(err)
+          ? err.response?.data?.message || "Ошибка при сбросе прогресса"
+          : "Ошибка при сбросе прогресса";
+        showNotification(errorMessage);
       }
       return;
     }
@@ -119,9 +133,12 @@ const WorkoutPage = () => {
           clearedProgress[exercise._id] = 0;
         });
         dispatch(setCurrentProgressWorkout(clearedProgress));
+        showNotification("Прогресс очищен");
       } catch (err) {
-        console.error("Failed to clear progress:", err);
-        alert("Ошибка при сбросе прогресса");
+        const errorMessage = axios.isAxiosError(err)
+          ? err.response?.data?.message || "Ошибка при сбросе прогресса"
+          : "Ошибка при сбросе прогресса";
+        showNotification(errorMessage);
       }
       return;
     }
@@ -143,9 +160,12 @@ const WorkoutPage = () => {
 
         dispatch(setCurrentProgressWorkout({ video: progressData.video || 0 }));
         setIsProgressModalOpen(false);
+        showNotification("Прогресс добавлен");
       } catch (err) {
-        console.error("Failed to save progress:", err);
-        alert("Ошибка при сохранении прогресса");
+        const errorMessage = axios.isAxiosError(err)
+          ? err.response?.data?.message || "Ошибка при сохранении прогресса"
+          : "Ошибка при сохранении прогресса";
+        showNotification(errorMessage);
       }
       return;
     }
@@ -175,9 +195,15 @@ const WorkoutPage = () => {
 
       dispatch(setCurrentProgressWorkout(mergedProgress));
       setIsProgressModalOpen(false);
+
+      const message =
+        status === "update" ? "Прогресс обновлен" : "Прогресс добавлен";
+      showNotification(message);
     } catch (err) {
-      console.error("Failed to save progress:", err);
-      alert("Ошибка при сохранении прогресса");
+      const errorMessage = axios.isAxiosError(err)
+        ? err.response?.data?.message || "Ошибка при сохранении прогресса"
+        : "Ошибка при сохранении прогресса";
+      showNotification(errorMessage);
     }
   };
 
@@ -267,7 +293,7 @@ const WorkoutPage = () => {
               {isVideoOnly
                 ? videoProgress === 100
                   ? "Сбросить прогресс"
-                  : "Отметить просмотр"
+                  : "Внести прогресс"
                 : buttonText}
             </button>
           </div>
@@ -280,6 +306,13 @@ const WorkoutPage = () => {
         exercises={currentWorkout.exercises || []}
         isVideoOnly={isVideoOnly}
         onSave={handleSaveProgress}
+      />
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type="success"
+        message={notification.message}
+        onClose={() => setNotification({ isOpen: false, message: "" })}
       />
     </>
   );

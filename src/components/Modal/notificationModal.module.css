@@ -1,0 +1,158 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 426px;
+  height: 270px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 34px;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  background: rgba(255, 255, 255, 1);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.modal.closing {
+  animation: slideOut 0.3s ease-in-out forwards;
+}
+
+.overlay.closing {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+.message {
+  color: rgba(0, 0, 0, 1);
+  font-family: "Roboto";
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 110%;
+  letter-spacing: 0px;
+  text-align: center;
+  margin: 0;
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message.confirm {
+  font-size: 20px;
+  font-weight: 600;
+  min-height: auto;
+}
+
+.message.error {
+  font-size: 20px;
+  font-weight: 400;
+  color: #ff4444;
+  min-height: auto;
+}
+.success {
+  color: rgba(0, 0, 0, 1);
+}
+
+.error {
+  color: #ff4444;
+}
+
+.confirm {
+  color: rgba(0, 0, 0, 1);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+}
+
+.confirmButton {
+  padding: 12px 32px;
+  background: #bcec30;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.confirmButton:hover {
+  background: #a8d626;
+}
+
+.cancelButton {
+  padding: 12px 32px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.cancelButton:hover {
+  background: #e0e0e0;
+}
+
+.confirm {
+  color: rgba(0, 0, 0, 1);
+}

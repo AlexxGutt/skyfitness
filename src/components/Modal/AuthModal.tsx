@@ -7,11 +7,12 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import {
   clearError,
   setAccess,
-  setError,
   setUserEmail,
   setUsername,
 } from "@/store/features/authSlice";
 import { getSignIn, getSignUp } from "@/service/api/apiAuth";
+import NotificationModal from "@/components/Modal/NotificationModal";
+import axios from "axios";
 
 export type AuthModalProps = {
   isOpen: boolean;
@@ -22,11 +23,16 @@ export type AuthModalProps = {
 
 const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
+  const { isLoading } = useAppSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({ isOpen: false, message: "", type: "error" });
 
   const isSignUp = mode === "sign-up";
 
@@ -45,6 +51,14 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
     onSwitchMode();
   };
 
+  const showNotification = (message: string, type: "success" | "error") => {
+    setNotification({ isOpen: true, message, type });
+    setTimeout(
+      () => setNotification({ isOpen: false, message: "", type: "error" }),
+      3000,
+    );
+  };
+
   const validateForm = () => {
     if (!email.trim()) return "Введите email";
     if (!password) return "Введите пароль";
@@ -59,7 +73,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
 
     const validationError = validateForm();
     if (validationError) {
-      dispatch(setError(validationError));
+      showNotification(validationError, "error");
       return;
     }
 
@@ -67,30 +81,30 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
 
     if (isSignUp) {
       getSignUp(data)
-        .then((res) => {
-          console.log("Регистрация успешна:", res.data);
-          dispatch(clearError());
-          onClose();
+        .then(() => {
+          showNotification("Регистрация успешна", "success");
+          setTimeout(() => onClose(), 1500);
         })
         .catch((err) => {
-          const errMessage = err.response?.data?.message;
-          console.log("Ошибка регистрации:", errMessage);
-          dispatch(setError(errMessage));
+          const errMessage = axios.isAxiosError(err)
+            ? err.response?.data?.message || "Ошибка регистрации"
+            : "Ошибка регистрации";
+          showNotification(errMessage, "error");
         });
     } else {
       getSignIn(data)
         .then((res) => {
-          console.log("Вход успешен:", res.data);
           dispatch(setAccess(res.data.token));
           dispatch(setUserEmail(email));
           dispatch(setUsername(email.split("@")[0]));
-          dispatch(clearError());
-          onClose();
+          showNotification("Вход успешен", "success");
+          setTimeout(() => onClose(), 1500);
         })
         .catch((err) => {
-          const errMessage = err.response?.data?.message;
-          console.log("Ошибка входа:", errMessage);
-          dispatch(setError(errMessage));
+          const errMessage = axios.isAxiosError(err)
+            ? err.response?.data?.message || "Ошибка входа"
+            : "Ошибка входа";
+          showNotification(errMessage, "error");
         });
     }
   };
@@ -144,7 +158,6 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
                 required
               />
             )}
-            {error && <div className={styles.errorMessage}>{error}</div>}
             <button
               type="submit"
               className={styles.primaryButton}
@@ -168,6 +181,15 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
           </form>
         </div>
       </div>
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type={notification.type}
+        message={notification.message}
+        onClose={() =>
+          setNotification({ isOpen: false, message: "", type: "error" })
+        }
+      />
     </>
   );
 };

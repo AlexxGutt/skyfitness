@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { CourseType } from "@/sharedTypes/sharedTypes";
 import {
@@ -14,13 +17,16 @@ import {
 } from "@/service/api/apiCourse";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import NotificationModal, {
+  NotificationType,
+} from "@/components/Modal/NotificationModal";
 
 export type CardProps = {
   course: CourseType;
   variant?: "add" | "delete";
   onSuccess?: () => void;
-  progress?: number; // Прогресс (0-100)
-  onStartCourse?: (courseId: string) => void; // Колбэк для кнопки "Начать/Продолжить"
+  progress?: number;
+  onStartCourse?: (courseId: string) => void;
 };
 
 const Card = ({
@@ -41,6 +47,12 @@ const Card = ({
     _id,
   } = course;
 
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    type: NotificationType;
+    message: string;
+  }>({ isOpen: false, type: "success", message: "" });
+
   const isDeleteVariant = variant === "delete";
   const buttonIcon = isDeleteVariant
     ? "/Remove-in-Circle.svg"
@@ -48,29 +60,29 @@ const Card = ({
   const buttonAlt = isDeleteVariant ? "Удалить курс" : "Добавить курс";
   const tooltipText = isDeleteVariant ? "Удалить курс" : "Добавить курс";
 
-  // Определяем текст кнопки в зависимости от прогресса
   const getButtonText = () => {
     if (progress === 100) return "Начать заново";
     if (progress > 0) return "Продолжить";
     return "Начать";
   };
 
+  const showNotification = (type: NotificationType, message: string) => {
+    setNotification({ isOpen: true, type, message });
+    if (type !== "confirm") {
+      setTimeout(
+        () => setNotification({ isOpen: false, type: "success", message: "" }),
+        3000,
+      );
+    }
+  };
+
   const handleCardClick = () => {
     router.push(`/course/${_id}`);
   };
 
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const performDelete = () => {
     if (!access) {
-      alert("Авторизуйтесь, чтобы продолжить");
       return;
-    }
-
-    if (isDeleteVariant && progress > 0 && progress < 100) {
-      const confirmed = window.confirm(
-        "Вы уверены что хотите удалить курс, весь прогресс будет утерян?",
-      );
-      if (!confirmed) return;
     }
 
     const request = isDeleteVariant
@@ -79,12 +91,37 @@ const Card = ({
 
     request
       .then(() => {
-        console.log(isDeleteVariant ? "Курс удален" : "Курс добавлен");
-        onSuccess?.();
+        const message = isDeleteVariant
+          ? "Курс успешно удален"
+          : "Курс успешно добавлен";
+        showNotification("success", message);
+        setTimeout(() => {
+          onSuccess?.();
+        }, 3100);
       })
       .catch((err) => {
-        alert(err.response?.data?.message || "Произошла ошибка");
+        const errorMessage = err.response?.data?.message || "Произошла ошибка";
+        showNotification("error", errorMessage);
       });
+  };
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!access) {
+      showNotification("error", "Авторизуйтесь, чтобы продолжить");
+      return;
+    }
+
+    if (isDeleteVariant && progress > 0 && progress < 100) {
+      setNotification({
+        isOpen: true,
+        type: "confirm",
+        message:
+          "Вы уверены что хотите удалить курс, весь прогресс будет утерян?",
+      });
+      return;
+    }
+
+    performDelete();
   };
 
   const handleActionClick = async (e: React.MouseEvent) => {
@@ -93,84 +130,105 @@ const Card = ({
     if (progress === 100 && access) {
       try {
         await deleteProgressCourse(access, _id);
+        showNotification("success", "Прогресс очищен");
         onSuccess?.();
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          alert(err.response?.data?.message || "Ошибка при очистке прогресса");
-        } else {
-          alert("Ошибка при очистке прогресса");
-        }
+        const errorMessage = axios.isAxiosError(err)
+          ? err.response?.data?.message || "Ошибка при очистке прогресса"
+          : "Ошибка при очистке прогресса";
+        showNotification("error", errorMessage);
       }
     } else if (onStartCourse) {
       onStartCourse(_id);
     }
   };
+
   return (
-    <div className={styles.card} onClick={handleCardClick}>
-      <div className={styles.imageContainer}>
-        <div className={styles.imageWrapper}>
-          <Image
-            src={getCourseImage(nameEN)}
-            alt={nameRU}
-            width={834}
-            height={557}
-            className={styles.image}
-            style={getImageStyle(nameEN)}
-          />
-        </div>
-        <div className={styles.buttonWrapper}>
-          <button className={styles.addButton} onClick={handleButtonClick}>
-            <Image src={buttonIcon} alt={buttonAlt} width={32} height={32} />
-          </button>
-          <span className={styles.tooltip}>{tooltipText}</span>
-        </div>
-      </div>
-
-      <div className={styles.content}>
-        <h3 className={styles.title}>{nameRU}</h3>
-        <div className={styles.badgesRow}>
-          <div className={styles.badge}>
-            <Image src="/Calendar.svg" alt="Календарь" width={18} height={18} />
-            <span className={styles.badgeText}>{durationInDays} дней</span>
-          </div>
-          <div className={styles.badge}>
-            <Image src="/Time.svg" alt="Время" width={18} height={18} />
-            <span className={styles.badgeText}>
-              {dailyDurationInMinutes.from}-{dailyDurationInMinutes.to} мин/день
-            </span>
-          </div>
-        </div>
-        <div className={styles.badgesRow}>
-          <div className={styles.badge}>
+    <>
+      <div className={styles.card} onClick={handleCardClick}>
+        <div className={styles.imageContainer}>
+          <div className={styles.imageWrapper}>
             <Image
-              src="/mingcute_signal-fill.svg"
-              alt="Сложность"
-              width={18}
-              height={18}
+              src={getCourseImage(nameEN)}
+              alt={nameRU}
+              width={834}
+              height={557}
+              className={styles.image}
+              style={getImageStyle(nameEN)}
             />
-            <span className={styles.badgeText}>
-              {getDifficultyText(difficulty)}
-            </span>
+          </div>
+          <div className={styles.buttonWrapper}>
+            <button className={styles.addButton} onClick={handleButtonClick}>
+              <Image src={buttonIcon} alt={buttonAlt} width={32} height={32} />
+            </button>
+            <span className={styles.tooltip}>{tooltipText}</span>
           </div>
         </div>
 
-        {/* Блок прогресса - только для варианта "delete" (страница профиля) */}
-        {variant === "delete" && (
-          <div className={styles.progressSection}>
-            <div className={styles.progressText}>Прогресс {progress}%</div>
-            <div className={styles.progressBar}>
-              <div
-                className={styles.progressFill}
-                style={{ width: `${progress}%` }}
+        <div className={styles.content}>
+          <h3 className={styles.title}>{nameRU}</h3>
+          <div className={styles.badgesRow}>
+            <div className={styles.badge}>
+              <Image
+                src="/Calendar.svg"
+                alt="Календарь"
+                width={18}
+                height={18}
               />
+              <span className={styles.badgeText}>{durationInDays} дней</span>
             </div>
-            <button className={styles.actionButton} onClick={handleActionClick}>
-              {getButtonText()}
-            </button>
+            <div className={styles.badge}>
+              <Image src="/Time.svg" alt="Время" width={18} height={18} />
+              <span className={styles.badgeText}>
+                {dailyDurationInMinutes.from}-{dailyDurationInMinutes.to}
+                мин/день
+              </span>
+            </div>
           </div>
-        )}
+          <div className={styles.badgesRow}>
+            <div className={styles.badge}>
+              <Image
+                src="/mingcute_signal-fill.svg"
+                alt="Сложность"
+                width={18}
+                height={18}
+              />
+              <span className={styles.badgeText}>
+                {getDifficultyText(difficulty)}
+              </span>
+            </div>
+          </div>
+
+          {variant === "delete" && (
+            <div className={styles.progressSection}>
+              <div className={styles.progressText}>Прогресс {progress}%</div>
+              <div className={styles.progressBar}>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <button
+                className={styles.actionButton}
+                onClick={handleActionClick}
+              >
+                {getButtonText()}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type={notification.type}
+        message={notification.message}
+        onClose={() =>
+          setNotification({ isOpen: false, type: "success", message: "" })
+        }
+        onConfirm={performDelete}
+      />
+    </>
   );
 };
 

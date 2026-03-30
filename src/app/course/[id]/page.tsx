@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Header from "@/components/Header/Header";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -9,11 +10,18 @@ import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
 import { getCourseImage } from "@/constants/cardConstants";
 import { getAddCourse } from "@/service/api/apiCourse";
+import NotificationModal from "@/components/Modal/NotificationModal";
+import axios from "axios";
 
 const CoursePage = () => {
   const { id } = useParams();
   const { allCourses } = useAppSelector((state) => state.courses);
   const { access } = useAppSelector((state) => state.auth);
+
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({ isOpen: false, message: "" });
 
   const course = useMemo(() => {
     if (id && allCourses.length > 0) {
@@ -26,10 +34,7 @@ const CoursePage = () => {
 
   const loading = allCourses.length === 0;
 
-  // Данные для карточек преимуществ (из fitting API)
   const benefits = course?.fitting || [""];
-
-  // Направления из API
   const directions = course?.directions || [""];
 
   const benefitsList = [
@@ -40,24 +45,29 @@ const CoursePage = () => {
     "помогают противостоять стрессам",
   ];
 
+  const showNotification = (message: string) => {
+    setNotification({ isOpen: true, message });
+    setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
+  };
+
   const handleAddCourse = () => {
     const ID = course?._id as string;
     if (!access) {
-      alert("Авторизуйтесь, чтобы добавить курс");
+      showNotification("Авторизуйтесь, чтобы добавить курс");
       return;
     }
     getAddCourse(access, ID)
       .then(() => {
-        alert("Курс успешно добавлен!");
+        showNotification("Курс успешно добавлен!");
       })
       .catch((err) => {
-        const errorMessage =
-          err.response?.data?.message || "Ошибка добавления курса";
-        alert(errorMessage);
+        const errorMessage = axios.isAxiosError(err)
+          ? err.response?.data?.message || "Ошибка добавления курса"
+          : "Ошибка добавления курса";
+        showNotification(errorMessage);
       });
   };
 
-  // Получаем стили для hero изображения
   const heroImageStyle = getHeroImageStyle(course?.nameEN || "Yoga");
 
   if (loading) {
@@ -87,7 +97,6 @@ const CoursePage = () => {
       <Header />
       <main className={styles.container}>
         <div className={styles.content}>
-          {/* Блок с фоном и картинкой */}
           <div
             className={styles.heroBlock}
             style={{ backgroundColor: heroImageStyle.bgColor }}
@@ -114,10 +123,8 @@ const CoursePage = () => {
             </div>
           </div>
 
-          {/* Заголовок "Подойдет для вас, если:" */}
           <h2 className={styles.sectionTitle}>Подойдет для вас, если:</h2>
 
-          {/* Блок с карточками преимуществ */}
           <div className={styles.benefitsGrid}>
             {benefits.map((benefit, index) => (
               <div key={index} className={styles.benefitCard}>
@@ -127,10 +134,8 @@ const CoursePage = () => {
             ))}
           </div>
 
-          {/* Заголовок "Направления" */}
           <h2 className={styles.directionsTitle}>Направления</h2>
 
-          {/* Блок с направлениями */}
           <div className={styles.directionsBlock}>
             <Image
               src="/sportsman.svg"
@@ -155,7 +160,6 @@ const CoursePage = () => {
             </div>
           </div>
 
-          {/* Блок "Начните путь к новому телу" */}
           <div className={styles.callToAction}>
             <div className={styles.ctaContent}>
               <h2 className={styles.ctaTitle}>
@@ -173,7 +177,6 @@ const CoursePage = () => {
               </button>
             </div>
 
-            {/* Декоративные изображения */}
             <div className={styles.ctaImages}>
               <Image
                 src="/Vector green.svg"
@@ -193,6 +196,13 @@ const CoursePage = () => {
           </div>
         </div>
       </main>
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type="success"
+        message={notification.message}
+        onClose={() => setNotification({ isOpen: false, message: "" })}
+      />
     </>
   );
 };
