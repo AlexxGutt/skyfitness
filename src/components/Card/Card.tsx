@@ -66,6 +66,13 @@ const Card = ({
       return;
     }
 
+    if (isDeleteVariant && progress > 0 && progress < 100) {
+      const confirmed = window.confirm(
+        "Вы уверены что хотите удалить курс, весь прогресс будет утерян?",
+      );
+      if (!confirmed) return;
+    }
+
     const request = isDeleteVariant
       ? getDeleteCourse(access, _id)
       : getAddCourse(access, _id);
