@@ -5,40 +5,62 @@ import { useParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import Header from "@/components/Header/Header";
 import styles from "./page.module.css";
-import { getDataWorkout } from "@/service/api/apiWorkout";
+import {
+  changeProgressWorkout,
+  getDataWorkout,
+} from "@/service/api/apiWorkout";
+import { getProgressWorkout } from "@/service/api/apiWorkout";
 import { useParseExerciseName } from "@/hooks/useParseExerciseName";
-import ProgressModal from "@/components/Modal/ProgressModal";
+import ProgressModal, { Exercise } from "@/components/Modal/ProgressModal";
 import { useRestoreCurrentCourse } from "@/hooks/useRestoreCurrentCourse";
 import { useRestoreCurrentWorkout } from "@/hooks/useRestoreCurrentWorkout";
-import { setCurrentWorkout } from "@/store/features/courseSlice";
+import { useRestoreCurrentProgressWorkout } from "@/hooks/useRestoreCurrentProgressWorkout";
+import {
+  setCurrentWorkout,
+  setCurrentProgressWorkout,
+} from "@/store/features/courseSlice";
 
 const WorkoutPage = () => {
   useRestoreCurrentCourse();
   useRestoreCurrentWorkout();
+  useRestoreCurrentProgressWorkout();
 
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const { access } = useAppSelector((state) => state.auth);
-  const { currentCourse, currentWorkout } = useAppSelector(
-    (state) => state.courses,
-  );
+  const { currentCourse, currentWorkout, currentProgressWorkout } =
+    useAppSelector((state) => state.courses);
   const { parseExerciseName } = useParseExerciseName();
 
-  const [progress, setProgress] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!access || !id) return;
+    if (!access || !id || !currentCourse) return;
 
     const workoutId = Array.isArray(id) ? id[0] : id;
-    getDataWorkout(access, workoutId)
-      .then((res) => {
-        dispatch(setCurrentWorkout(res.data));
+
+    Promise.all([
+      getDataWorkout(access, workoutId),
+      getProgressWorkout(access, currentCourse._id, workoutId),
+    ])
+      .then(([workoutRes, progressRes]) => {
+        dispatch(setCurrentWorkout(workoutRes.data));
+
+        if (progressRes.data.progressData) {
+          const progressMap: Record<string, number> = {};
+          workoutRes.data.exercises?.forEach(
+            (exercise: Exercise, index: number) => {
+              progressMap[exercise._id] =
+                progressRes.data.progressData[index] || 0;
+            },
+          );
+          dispatch(setCurrentProgressWorkout(progressMap));
+        }
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
-  }, [access, id, dispatch]);
+  }, [access, id, currentCourse, dispatch]);
 
   const handleFillProgress = () => {
     if (!access) {
@@ -48,10 +70,46 @@ const WorkoutPage = () => {
     setIsProgressModalOpen(true);
   };
 
-  const handleSaveProgress = (progressData: Record<string, number>) => {
-    setProgress(progressData);
-    setIsProgressModalOpen(false);
-    alert("Прогресс сохранен");
+  const handleSaveProgress = async (progressData: Record<string, number>) => {
+    if (!access || !currentCourse || !currentWorkout) return;
+
+    const workoutId = Array.isArray(id) ? id[0] : id;
+    if (!workoutId) return;
+
+    // Для каждого упражнения: если пользователь ввёл значение — берём его,
+    // иначе берём старое из currentProgressWorkout
+    const mergedProgress: Record<string, number> = {};
+    currentWorkout.exercises?.forEach((exercise) => {
+      if (
+        progressData[exercise._id] !== undefined &&
+        progressData[exercise._id] !== 0
+      ) {
+        mergedProgress[exercise._id] = progressData[exercise._id];
+      } else {
+        mergedProgress[exercise._id] =
+          currentProgressWorkout?.[exercise._id] || 0;
+      }
+    });
+
+    const progressArray =
+      currentWorkout.exercises?.map((exercise) => {
+        return mergedProgress[exercise._id] || 0;
+      }) || [];
+
+    console.log("Sending progressArray:", progressArray);
+
+    try {
+      await changeProgressWorkout(access, currentCourse._id, workoutId, {
+        progressData: progressArray,
+      });
+
+      dispatch(setCurrentProgressWorkout(mergedProgress));
+      setIsProgressModalOpen(false);
+      alert("Прогресс сохранен");
+    } catch (err) {
+      console.error("Failed to save progress:", err);
+      alert("Ошибка при сохранении прогресса");
+    }
   };
 
   if (loading) {
@@ -97,22 +155,29 @@ const WorkoutPage = () => {
               <h2 className={styles.exercisesTitle}>Упражнения тренировки</h2>
 
               <div className={styles.exercisesList}>
-                {currentWorkout.exercises?.map((exercise) => (
-                  <div key={exercise._id} className={styles.exerciseItem}>
-                    <div className={styles.exerciseName}>
-                      {parseExerciseName(exercise.name)}{" "}
-                      {progress[exercise._id] || 0}%
+                {currentWorkout.exercises?.map((exercise) => {
+                  const completed = currentProgressWorkout?.[exercise._id] || 0;
+                  const percentage = Math.min(
+                    Math.round((completed / exercise.quantity) * 100),
+                    100,
+                  );
+
+                  return (
+                    <div key={exercise._id} className={styles.exerciseItem}>
+                      <div className={styles.exerciseName}>
+                        {parseExerciseName(exercise.name)} {percentage}%
+                      </div>
+                      <div className={styles.progressBar}>
+                        <div
+                          className={styles.progressFill}
+                          style={{
+                            width: `${percentage}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className={styles.progressBar}>
-                      <div
-                        className={styles.progressFill}
-                        style={{
-                          width: `${progress[exercise._id] || 0}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

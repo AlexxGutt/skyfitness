@@ -5,7 +5,7 @@ import styles from "./progressModal.module.css";
 import { useCustomScroll } from "@/hooks/useCustomScroll";
 import { useParseExerciseName } from "@/hooks/useParseExerciseName";
 
-type Exercise = {
+export type Exercise = {
   _id: string;
   name: string;
   quantity: number;
@@ -50,11 +50,7 @@ const ProgressModal: React.FC<ProgressModalProps> = ({
     const progress: Record<string, number> = {};
     exercises.forEach((exercise) => {
       const value = parseInt(inputValues[exercise._id] || "0", 10);
-      const percentage = Math.min(
-        Math.round((value / exercise.quantity) * 100),
-        100,
-      );
-      progress[exercise._id] = percentage;
+      progress[exercise._id] = Math.min(value, exercise.quantity);
     });
     onSave?.(progress);
   };
