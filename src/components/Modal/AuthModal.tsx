@@ -28,11 +28,12 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [errorField, setErrorField] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
     isOpen: boolean;
     message: string;
-    type: "success" | "error";
-  }>({ isOpen: false, message: "", type: "error" });
+  }>({ isOpen: false, message: "" });
 
   const isSignUp = mode === "sign-up";
 
@@ -47,33 +48,41 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   }, [onClose]);
 
   const handleSwitchMode = () => {
+    setError("");
+    setErrorField(null);
     dispatch(clearError());
     onSwitchMode();
   };
 
-  const showNotification = (message: string, type: "success" | "error") => {
-    setNotification({ isOpen: true, message, type });
-    setTimeout(
-      () => setNotification({ isOpen: false, message: "", type: "error" }),
-      3000,
-    );
-  };
-
   const validateForm = () => {
-    if (!email.trim()) return "Введите email";
-    if (!password) return "Введите пароль";
-    if (isSignUp && password !== confirmPassword) return "Пароли не совпадают";
-    if (isSignUp && password.length < 6)
+    if (!email.trim()) {
+      setErrorField("email");
+      return "Введите email";
+    }
+    if (!password) {
+      setErrorField("password");
+      return "Введите пароль";
+    }
+    if (isSignUp && password !== confirmPassword) {
+      setErrorField("confirmPassword");
+      return "Пароли не совпадают";
+    }
+    if (isSignUp && password.length < 6) {
+      setErrorField("password");
       return "Пароль должен содержать минимум 6 символов";
+    }
+    setErrorField(null);
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setErrorField(null);
 
     const validationError = validateForm();
     if (validationError) {
-      showNotification(validationError, "error");
+      setError(validationError);
       return;
     }
 
@@ -82,14 +91,17 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
     if (isSignUp) {
       getSignUp(data)
         .then(() => {
-          showNotification("Регистрация успешна", "success");
-          setTimeout(() => onClose(), 1500);
+          setNotification({ isOpen: true, message: "Успешная регистрация" });
+          setTimeout(() => {
+            setNotification({ isOpen: false, message: "" });
+            onClose();
+          }, 2000);
         })
         .catch((err) => {
           const errMessage = axios.isAxiosError(err)
             ? err.response?.data?.message || "Ошибка регистрации"
             : "Ошибка регистрации";
-          showNotification(errMessage, "error");
+          setError(errMessage);
         });
     } else {
       getSignIn(data)
@@ -97,14 +109,13 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
           dispatch(setAccess(res.data.token));
           dispatch(setUserEmail(email));
           dispatch(setUsername(email.split("@")[0]));
-          showNotification("Вход успешен", "success");
-          setTimeout(() => onClose(), 1500);
+          onClose();
         })
         .catch((err) => {
           const errMessage = axios.isAxiosError(err)
             ? err.response?.data?.message || "Ошибка входа"
             : "Ошибка входа";
-          showNotification(errMessage, "error");
+          setError(errMessage);
         });
     }
   };
@@ -134,7 +145,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
               placeholder="Эл. почта"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={styles.input}
+              className={`${styles.input} ${errorField === "email" ? styles.inputError : ""}`}
               disabled={isLoading}
               required
             />
@@ -143,7 +154,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
               placeholder="Пароль"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={styles.input}
+              className={`${styles.input} ${errorField === "password" ? styles.inputError : ""}`}
               disabled={isLoading}
               required
             />
@@ -153,11 +164,12 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
                 placeholder="Повторите пароль"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className={styles.input}
+                className={`${styles.input} ${errorField === "confirmPassword" ? styles.inputError : ""}`}
                 disabled={isLoading}
                 required
               />
             )}
+            {error && <div className={styles.errorMessage}>{error}</div>}
             <button
               type="submit"
               className={styles.primaryButton}
@@ -184,11 +196,9 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
 
       <NotificationModal
         isOpen={notification.isOpen}
-        type={notification.type}
+        type="success"
         message={notification.message}
-        onClose={() =>
-          setNotification({ isOpen: false, message: "", type: "error" })
-        }
+        onClose={() => setNotification({ isOpen: false, message: "" })}
       />
     </>
   );

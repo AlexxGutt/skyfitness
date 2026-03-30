@@ -9,7 +9,7 @@ import {
   getImageStyle,
 } from "@/constants/cardConstants";
 import styles from "./card.module.css";
-import { useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import {
   deleteProgressCourse,
   getAddCourse,
@@ -20,6 +20,7 @@ import axios from "axios";
 import NotificationModal, {
   NotificationType,
 } from "@/components/Modal/NotificationModal";
+import { clearProgressCourse } from "@/store/features/courseSlice";
 
 export type CardProps = {
   course: CourseType;
@@ -36,6 +37,7 @@ const Card = ({
   progress = 0,
   onStartCourse,
 }: CardProps) => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const { access } = useAppSelector((state) => state.auth);
   const {
@@ -80,30 +82,38 @@ const Card = ({
     router.push(`/course/${_id}`);
   };
 
-  const performDelete = () => {
+  const performDelete = async () => {
     if (!access) {
       return;
     }
 
-    const request = isDeleteVariant
-      ? getDeleteCourse(access, _id)
-      : getAddCourse(access, _id);
+    try {
+      if (isDeleteVariant) {
+        await deleteProgressCourse(access, _id);
+        dispatch(clearProgressCourse());
+      }
 
-    request
-      .then(() => {
-        const message = isDeleteVariant
-          ? "Курс успешно удален"
-          : "Курс успешно добавлен";
-        showNotification("success", message);
-        setTimeout(() => {
-          onSuccess?.();
-        }, 3100);
-      })
-      .catch((err) => {
-        const errorMessage = err.response?.data?.message || "Произошла ошибка";
-        showNotification("error", errorMessage);
-      });
+      const request = isDeleteVariant
+        ? getDeleteCourse(access, _id)
+        : getAddCourse(access, _id);
+
+      await request;
+
+      const message = isDeleteVariant
+        ? "Курс успешно удален"
+        : "Курс успешно добавлен";
+      showNotification("success", message);
+      setTimeout(() => {
+        onSuccess?.();
+      }, 3100);
+    } catch (err) {
+      const errorMessage = axios.isAxiosError(err)
+        ? err.response?.data?.message || "Произошла ошибка"
+        : "Произошла ошибка";
+      showNotification("error", errorMessage);
+    }
   };
+
   const handleButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!access) {
