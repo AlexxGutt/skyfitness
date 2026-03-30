@@ -77,3 +77,24 @@
   align-items: center;
   justify-content: center;
 }
+
+@media (max-width: 480px) {
+  .container {
+    gap: 0;
+    padding: 40px 16px 0 16px;
+  }
+
+  .rightContent {
+    display: none;
+  }
+
+  .mainTitle {
+    font-size: 32px;
+    width: 100%;
+    max-width: 327px;
+  }
+
+  .leftContent {
+    width: 100%;
+  }
+}
