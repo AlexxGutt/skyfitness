@@ -7,6 +7,7 @@ export type initialStateType = {
   refresh: string;
   isLoading: boolean;
   error: string | null;
+  isHydrated: boolean;
 };
 
 const initialState: initialStateType = {
@@ -16,6 +17,7 @@ const initialState: initialStateType = {
   refresh: "",
   isLoading: false,
   error: "",
+  isHydrated: false,
 };
 
 const authSlice = createSlice({
@@ -48,11 +50,15 @@ const authSlice = createSlice({
       state.refresh = action.payload;
       localStorage.setItem("refresh", action.payload);
     },
+    setHydrated: (state) => {
+      state.isHydrated = true;
+    },
     clearUser: (state) => {
       state.username = "";
       state.access = "";
       state.refresh = "";
       state.email = "";
+      state.isHydrated = false;
       localStorage.removeItem("email");
       localStorage.removeItem("username");
       localStorage.removeItem("access");
@@ -70,5 +76,6 @@ export const {
   setLoading,
   clearError,
   setUserEmail,
+  setHydrated,
 } = authSlice.actions;
 export const authSliceReducer = authSlice.reducer;
