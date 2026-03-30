@@ -113,36 +113,3 @@
   padding: 60px;
   font-size: 18px;
 }
-
-@media (max-width: 768px) {
-  .container {
-    padding: 40px 20px;
-  }
-
-  .title {
-    width: 100%;
-    font-size: 32px;
-  }
-
-  .videoFrame {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-  }
-
-  .exercisesCard {
-    width: 100%;
-  }
-
-  .exercisesList {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .exerciseItem,
-  .exerciseName,
-  .progressBar,
-  .fillButton {
-    width: 100%;
-  }
-}

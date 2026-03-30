@@ -27,12 +27,3 @@
 .button:active {
   transform: translateY(0);
 }
-
-@media (max-width: 768px) {
-  .button {
-    width: auto;
-    height: auto;
-    padding: 12px 20px;
-    font-size: 14px;
-  }
-}

@@ -39,7 +39,6 @@
   display: block;
 }
 
-/* Контейнер для кнопки и тултипа */
 .buttonWrapper {
   position: absolute;
   top: 20px;
@@ -66,7 +65,6 @@
   transform: scale(0.95);
 }
 
-/* Тултип при наведении */
 .tooltip {
   position: absolute;
   top: 50%;
@@ -93,7 +91,6 @@
   visibility: visible;
 }
 
-/* Стрелочка у тултипа */
 .tooltip::before {
   content: "";
   position: absolute;
@@ -158,9 +155,6 @@
   white-space: nowrap;
 }
 
-/* Добавить в конец файла */
-
-/* Блок прогресса */
 .progressSection {
   margin-top: 20px;
   display: flex;
@@ -228,40 +222,4 @@
 .actionButton:active {
   background: #000000;
   color: #ffffff;
-}
-
-@media (max-width: 768px) {
-  .card {
-    width: 100%;
-    max-width: 360px;
-    height: auto;
-  }
-
-  .imageContainer {
-    width: 100%;
-    max-width: 360px;
-    height: 325px;
-  }
-
-  .title {
-    font-size: 24px;
-  }
-
-  .badgeText {
-    font-size: 16px;
-  }
-
-  .buttonWrapper {
-    top: 15px;
-    right: 15px;
-  }
-
-  .addButton {
-    width: 28px;
-    height: 28px;
-  }
-
-  .tooltip {
-    display: none;
-  }
 }

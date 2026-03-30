@@ -4,7 +4,7 @@ import { useState } from "react";
 import Header from "@/components/Header/Header";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { useEffect, useMemo } from "react";
 import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
@@ -12,8 +12,10 @@ import { getCourseImage } from "@/constants/cardConstants";
 import { getAddCourse } from "@/service/api/apiCourse";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
+import { setLoading } from "@/store/features/loaderSlice";
 
 const CoursePage = () => {
+  const dispatch = useAppDispatch();
   const { id } = useParams();
   const { allCourses } = useAppSelector((state) => state.courses);
   const { access } = useAppSelector((state) => state.auth);
@@ -32,8 +34,11 @@ const CoursePage = () => {
 
   useEffect(() => {}, [access]);
 
-  const loading = allCourses.length === 0;
+  useEffect(() => {
+    dispatch(setLoading(false));
+  }, [dispatch]);
 
+  const loading = allCourses.length === 0;
   const benefits = course?.fitting || [""];
   const directions = course?.directions || [""];
 
@@ -56,6 +61,9 @@ const CoursePage = () => {
       showNotification("Авторизуйтесь, чтобы добавить курс");
       return;
     }
+
+    dispatch(setLoading(true));
+
     getAddCourse(access, ID)
       .then(() => {
         showNotification("Курс успешно добавлен!");
@@ -65,6 +73,9 @@ const CoursePage = () => {
           ? err.response?.data?.message || "Ошибка добавления курса"
           : "Ошибка добавления курса";
         showNotification(errorMessage);
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
       });
   };
 

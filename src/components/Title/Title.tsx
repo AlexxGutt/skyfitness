@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import styles from "./title.module.css";
 
-const Title: React.FC = () => {
+const Title = () => {
   return (
     <section className={styles.titleSection}>
       <div className={styles.container}>

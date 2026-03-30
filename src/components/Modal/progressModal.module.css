@@ -78,7 +78,7 @@
   overflow-y: auto;
   padding-right: 14px;
   flex: 1;
-  min-height: 0; /* ← добавь это */
+  min-height: 0;
 }
 
 .exerciseBlock {
@@ -193,23 +193,4 @@
 .videoOptionActive {
   background: #bcec30;
   border-color: #bcec30;
-}
-
-@media (max-width: 480px) {
-  .modalContent {
-    width: calc(100vw - 32px);
-    max-width: 426px;
-    padding: 32px 24px;
-    gap: 32px;
-  }
-
-  .title {
-    font-size: 28px;
-  }
-
-  .exerciseBlock,
-  .input,
-  .saveButton {
-    width: 100%;
-  }
 }

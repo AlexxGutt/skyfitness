@@ -21,6 +21,8 @@ import NotificationModal, {
   NotificationType,
 } from "@/components/Modal/NotificationModal";
 import { clearProgressCourse } from "@/store/features/courseSlice";
+import { setLoading } from "@/store/features/loaderSlice";
+import GlobalLoader from "@/components/Loader/GlobalLoader";
 
 export type CardProps = {
   course: CourseType;
@@ -40,6 +42,7 @@ const Card = ({
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { access } = useAppSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
   const {
     nameRU,
     nameEN,
@@ -79,6 +82,7 @@ const Card = ({
   };
 
   const handleCardClick = () => {
+    dispatch(setLoading(true));
     router.push(`/course/${_id}`);
   };
 
@@ -86,6 +90,9 @@ const Card = ({
     if (!access) {
       return;
     }
+
+    setIsLoading(true);
+    dispatch(setLoading(true));
 
     try {
       if (isDeleteVariant) {
@@ -111,6 +118,9 @@ const Card = ({
         ? err.response?.data?.message || "Произошла ошибка"
         : "Произошла ошибка";
       showNotification("error", errorMessage);
+    } finally {
+      setIsLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -138,6 +148,9 @@ const Card = ({
     e.stopPropagation();
 
     if (progress === 100 && access) {
+      setIsLoading(true);
+      dispatch(setLoading(true));
+
       try {
         await deleteProgressCourse(access, _id);
         showNotification("success", "Прогресс очищен");
@@ -147,6 +160,9 @@ const Card = ({
           ? err.response?.data?.message || "Ошибка при очистке прогресса"
           : "Ошибка при очистке прогресса";
         showNotification("error", errorMessage);
+      } finally {
+        setIsLoading(false);
+        dispatch(setLoading(false));
       }
     } else if (onStartCourse) {
       onStartCourse(_id);
@@ -155,6 +171,7 @@ const Card = ({
 
   return (
     <>
+      {isLoading && <GlobalLoader />}
       <div className={styles.card} onClick={handleCardClick}>
         <div className={styles.imageContainer}>
           <div className={styles.imageWrapper}>
@@ -165,10 +182,15 @@ const Card = ({
               height={557}
               className={styles.image}
               style={getImageStyle(nameEN)}
+              loading="eager"
             />
           </div>
           <div className={styles.buttonWrapper}>
-            <button className={styles.addButton} onClick={handleButtonClick}>
+            <button
+              className={styles.addButton}
+              onClick={handleButtonClick}
+              disabled={isLoading}
+            >
               <Image src={buttonIcon} alt={buttonAlt} width={32} height={32} />
             </button>
             <span className={styles.tooltip}>{tooltipText}</span>
@@ -221,14 +243,14 @@ const Card = ({
               <button
                 className={styles.actionButton}
                 onClick={handleActionClick}
+                disabled={isLoading}
               >
-                {getButtonText()}
+                {isLoading ? "Загрузка..." : getButtonText()}{" "}
               </button>
             </div>
           )}
         </div>
       </div>
-
       <NotificationModal
         isOpen={notification.isOpen}
         type={notification.type}

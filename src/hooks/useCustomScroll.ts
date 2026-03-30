@@ -7,7 +7,6 @@ export const useCustomScroll = <T>(items: T[], isOpen?: boolean) => {
   const [thumbHeight, setThumbHeight] = useState(0);
   const [visible, setVisible] = useState(false);
 
-  // Обновление позиции ползунка
   useEffect(() => {
     const list = listRef.current;
     if (!list) return;
@@ -37,7 +36,6 @@ export const useCustomScroll = <T>(items: T[], isOpen?: boolean) => {
     return () => list.removeEventListener("scroll", update);
   }, [items.length, isOpen]);
 
-  // Drag ползунка мышкой
   useEffect(() => {
     const thumb = thumbRef.current;
     const list = listRef.current;
