@@ -53,3 +53,20 @@ export const changeProgressWorkout = (
     },
   );
 };
+
+export const clearProgressWorkout = (
+  token: string,
+  courseId: string,
+  workoutID: string,
+) => {
+  return axios.patch(
+    BASE_URL + `/api/fitness/courses/${courseId}/workouts/${workoutID}/reset`,
+    null,
+    {
+      headers: {
+        "Content-Type": "",
+        "Authorization": `Bearer ${token}`,
+      },
+    },
+  );
+};

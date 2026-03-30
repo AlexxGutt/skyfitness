@@ -125,7 +125,7 @@
 }
 
 .workoutItem.selected {
-  background-color: #bcec30;
+  background-color: #eeeee0;
 }
 
 .startButton:disabled {

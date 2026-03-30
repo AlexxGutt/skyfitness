@@ -29,11 +29,25 @@ export interface AuthType {
   password: string;
 }
 
+export interface WorkoutProgress {
+  workoutId: string;
+  workoutCompleted: boolean;
+  progressData: number[];
+  _id: string;
+}
+
+export interface CourseProgress {
+  courseId: string;
+  courseCompleted: boolean;
+  workoutsProgress: WorkoutProgress[];
+  _id: string;
+}
+
 export interface UserType {
   _id: string;
   email: string;
   selectedCourses: string[];
-  courseProgress: string[]; //потом переделеать на CourseProgress[]
+  courseProgress: CourseProgress[];
   createdAt: string;
   updatedAt: string;
   __v: number;

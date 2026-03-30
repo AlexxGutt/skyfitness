@@ -10,7 +10,6 @@ export type CardItemsProps = {
   type?: "all" | "user";
   courseIds?: string[];
   onCourseChange?: () => void;
-  courseProgress?: Record<string, number>;
   onStartCourse?: (courseId: string) => void;
 };
 
@@ -18,10 +17,9 @@ const CardItems = ({
   type = "all",
   courseIds = [],
   onCourseChange,
-  courseProgress = {},
   onStartCourse,
 }: CardItemsProps) => {
-  const { allCourses, isLoading, error } = useAppSelector(
+  const { allCourses, isLoading, error, usersCourse } = useAppSelector(
     (state) => state.courses,
   );
 
@@ -38,6 +36,23 @@ const CardItems = ({
       );
     }
   }
+
+  const calculateProgress = (courseId: string): number => {
+    const courseProgress = usersCourse?.courseProgress?.find(
+      (cp) => cp.courseId === courseId,
+    );
+    if (!courseProgress) return 0;
+
+    const course = safeAllCourses.find((c) => c._id === courseId);
+    if (!course || !course.workouts) return 0;
+
+    const totalWorkouts = course.workouts.length;
+    const completedWorkouts = courseProgress.workoutsProgress.filter(
+      (wp) => wp.workoutCompleted,
+    ).length;
+
+    return Math.round((completedWorkouts / totalWorkouts) * 100);
+  };
 
   if (isLoading) {
     return (
@@ -76,8 +91,8 @@ const CardItems = ({
             course={course}
             variant={type === "user" ? "delete" : "add"}
             onSuccess={onCourseChange}
-            progress={courseProgress[course._id] || 0}
-            onStartCourse={onStartCourse} // Добавляем
+            progress={calculateProgress(course._id)}
+            onStartCourse={onStartCourse}
           />
         ))}
       </div>

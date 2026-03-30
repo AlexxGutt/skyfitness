@@ -38,3 +38,16 @@ export const getDeleteCourse = (token: string, id: string) => {
     },
   });
 };
+
+export const deleteProgressCourse = (token: string, courseId: string) => {
+  return axios.patch(
+    BASE_URL + `/api/fitness/courses/${courseId}/reset`,
+    null,
+    {
+      headers: {
+        "Content-Type": "",
+        "Authorization": `Bearer ${token}`,
+      },
+    },
+  );
+};

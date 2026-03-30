@@ -5,6 +5,7 @@ import Image from "next/image";
 import styles from "./workoutModal.module.css";
 import { parseWorkoutName } from "@/hooks/parseWorkoutName";
 import { useCustomScroll } from "@/hooks/useCustomScroll";
+import { useAppSelector } from "@/store/store";
 
 export type Workout = {
   _id: string;
@@ -23,6 +24,7 @@ type WorkoutModalProps = {
   onClose: () => void;
   workouts: Workout[];
   onStartWorkout?: (workoutId: string) => void;
+  courseId: string;
 };
 
 const WorkoutModal: React.FC<WorkoutModalProps> = ({
@@ -30,14 +32,20 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   onClose,
   workouts = [],
   onStartWorkout,
+  courseId,
 }) => {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(
     null,
   );
+  const { usersCourse } = useAppSelector((state) => state.courses);
   const { listRef, thumbRef, thumbTop, thumbHeight, visible } = useCustomScroll(
     workouts,
     isOpen,
   );
+
+  const courseProgress = usersCourse?.courseProgress?.find(
+    (course) => course.courseId === courseId,
+  )?.workoutsProgress;
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -77,6 +85,13 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
               {workouts.map((workout) => {
                 const { name, description } = parseWorkoutName(workout.name);
                 const isSelected = selectedWorkoutId === workout._id;
+                const isCompleted =
+                  courseProgress?.find((w) => w.workoutId === workout._id)
+                    ?.workoutCompleted ?? false;
+                const icon = isCompleted
+                  ? "/Check-in-Circle.svg"
+                  : "/Check-in-Circle-Empty.svg";
+
                 return (
                   <React.Fragment key={workout._id}>
                     <div
@@ -85,8 +100,8 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
                     >
                       <div className={styles.checkbox}>
                         <Image
-                          src="/Check-in-Circle-Empty.svg"
-                          alt="Не пройдено"
+                          src={icon}
+                          alt={isCompleted ? "Пройдено" : "Не пройдено"}
                           width={24}
                           height={24}
                         />

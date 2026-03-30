@@ -7,8 +7,13 @@ import {
 } from "@/constants/cardConstants";
 import styles from "./card.module.css";
 import { useAppSelector } from "@/store/store";
-import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
+import {
+  deleteProgressCourse,
+  getAddCourse,
+  getDeleteCourse,
+} from "@/service/api/apiCourse";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export type CardProps = {
   course: CourseType;
@@ -75,13 +80,24 @@ const Card = ({
       });
   };
 
-  const handleActionClick = (e: React.MouseEvent) => {
+  const handleActionClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onStartCourse) {
+
+    if (progress === 100 && access) {
+      try {
+        await deleteProgressCourse(access, _id);
+        onSuccess?.();
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          alert(err.response?.data?.message || "Ошибка при очистке прогресса");
+        } else {
+          alert("Ошибка при очистке прогресса");
+        }
+      }
+    } else if (onStartCourse) {
       onStartCourse(_id);
     }
   };
-
   return (
     <div className={styles.card} onClick={handleCardClick}>
       <div className={styles.imageContainer}>

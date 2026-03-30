@@ -7,6 +7,7 @@ import Header from "@/components/Header/Header";
 import styles from "./page.module.css";
 import {
   changeProgressWorkout,
+  clearProgressWorkout,
   getDataWorkout,
 } from "@/service/api/apiWorkout";
 import { getProgressWorkout } from "@/service/api/apiWorkout";
@@ -67,14 +68,29 @@ const WorkoutPage = () => {
       .finally(() => setLoading(false));
   }, [access, id, currentCourse, dispatch]);
 
-  const handleFillProgress = () => {
+  const handleFillProgress = async () => {
     if (!access) {
       alert("Авторизуйтесь");
       return;
     }
 
     if (status === "restart") {
-      // TODO: Очистка прогресса
+      const workoutId = Array.isArray(id) ? id[0] : id;
+      if (!workoutId || !currentCourse || !currentWorkout) return;
+
+      try {
+        await clearProgressWorkout(access, currentCourse._id, workoutId);
+
+        const clearedProgress: Record<string, number> = {};
+        currentWorkout.exercises?.forEach((exercise) => {
+          clearedProgress[exercise._id] = 0;
+        });
+        dispatch(setCurrentProgressWorkout(clearedProgress));
+        alert("Прогресс сброшен");
+      } catch (err) {
+        console.error("Failed to clear progress:", err);
+        alert("Ошибка при сбросе прогресса");
+      }
       return;
     }
 

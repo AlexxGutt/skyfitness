@@ -21,6 +21,7 @@ const ProfilePage = () => {
   const { username, email, access, isHydrated } = useAppSelector(
     (state) => state.auth,
   );
+  const { currentCourse } = useAppSelector((state) => state.courses);
   const [refreshKey, setRefreshKey] = useState(0);
   const [courseProgress, setCourseProgress] = useState<Record<string, number>>(
     {},
@@ -134,7 +135,6 @@ const ProfilePage = () => {
               type="user"
               courseIds={selectedCourseIds}
               onCourseChange={handleCourseChange}
-              courseProgress={courseProgress}
               onStartCourse={handleStartCourse}
             />
           </div>
@@ -146,6 +146,7 @@ const ProfilePage = () => {
         onClose={() => setIsWorkoutModalOpen(false)}
         workouts={selectedWorkouts}
         onStartWorkout={handleStartWorkout}
+        courseId={currentCourse?._id || ""}
       />
     </>
   );
