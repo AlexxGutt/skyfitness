@@ -1,10 +1,12 @@
 import { CourseType, UserType } from "@/sharedTypes/sharedTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Workout } from "@/components/Modal/WorkoutModal";
 
 export type initialStateType = {
   allCourses: CourseType[];
   usersCourse: UserType | null;
   currentCourse: CourseType | null;
+  currentWorkout: Workout | null;
   isLoading: boolean;
   error: null | string;
 };
@@ -13,6 +15,7 @@ const initialState: initialStateType = {
   usersCourse: null,
   allCourses: [],
   currentCourse: null,
+  currentWorkout: null,
   isLoading: false,
   error: null,
 };
@@ -30,6 +33,11 @@ const courseSlice = createSlice({
     },
     setCurrentCourse: (state, action: PayloadAction<CourseType>) => {
       state.currentCourse = action.payload;
+      localStorage.setItem("currentCourse", JSON.stringify(action.payload));
+    },
+    setCurrentWorkout: (state, action: PayloadAction<Workout>) => {
+      state.currentWorkout = action.payload;
+      localStorage.setItem("currentWorkout", JSON.stringify(action.payload));
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -51,5 +59,6 @@ export const {
   clearError,
   setUsersCourse,
   setCurrentCourse,
+  setCurrentWorkout,
 } = courseSlice.actions;
 export const courseSliceReducer = courseSlice.reducer;

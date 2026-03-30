@@ -1,7 +1,7 @@
 .container {
   min-height: calc(100vh - 140px);
   background: #fafafa;
-  padding: 60px 140px;
+  padding: 0 140px;
 }
 
 .content {
@@ -44,7 +44,7 @@
 }
 
 .exercisesTitle {
-  font-size: 20px;
+  font-size: 32px;
   font-weight: 600;
   color: #000;
   margin: 0;
@@ -53,28 +53,31 @@
 .exercisesList {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 60px 60px;
+  gap: 20px 60px;
 }
 
 .exerciseItem {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
 .exerciseName {
   font-size: 18px;
   font-weight: 400;
   color: #000;
-  height: 20px;
+  min-height: 20px;
+  word-wrap: break-word;
 }
 
 .progressBar {
-  width: 320px;
+  width: 100%;
   height: 6px;
   border-radius: 50px;
   background: #f7f7f7;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .progressFill {

@@ -1,0 +1,176 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  animation: slideIn 0.3s ease;
+}
+
+.modalContent {
+  width: 426px;
+  max-height: 595px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 48px;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.title {
+  width: 346px;
+  font-size: 32px;
+  font-weight: 400;
+  color: #000;
+  margin: 0;
+  text-align: left;
+}
+
+.scrollContainer {
+  width: 100%;
+  position: relative;
+  flex: 1;
+  max-height: 300px;
+  display: flex;
+}
+
+.scrollTrack {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  background: #f0f0f0;
+  border-radius: 10px;
+  z-index: 10;
+}
+
+.scrollThumb {
+  position: absolute;
+  width: 6px;
+  background: #000000;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.exercisesList {
+  width: 100%;
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  padding-right: 14px;
+  flex: 1;
+  min-height: 0; /* ← добавь это */
+}
+
+.exerciseBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 320px;
+}
+
+.question {
+  font-size: 18px;
+  font-weight: 400;
+  color: #000;
+  line-height: 110%;
+}
+
+.input {
+  width: 320px;
+  height: 52px;
+  padding: 16px 18px;
+  border: 1px solid #d0cece;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: "Roboto", sans-serif;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #bcec30;
+}
+
+.saveButton {
+  width: 346px;
+  height: 52px;
+  padding: 16px 26px;
+  background: #bcec30;
+  border: none;
+  border-radius: 46px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.saveButton:hover {
+  background: #c6ff00;
+  box-shadow: 0 4px 12px rgba(198, 255, 0, 0.4);
+}
+
+.saveButton:active {
+  background: #000;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .modalContent {
+    width: calc(100vw - 32px);
+    max-width: 426px;
+    padding: 32px 24px;
+    gap: 32px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .exerciseBlock,
+  .input,
+  .saveButton {
+    width: 100%;
+  }
+}

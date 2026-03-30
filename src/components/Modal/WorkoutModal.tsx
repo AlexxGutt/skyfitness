@@ -34,8 +34,10 @@ const WorkoutModal: React.FC<WorkoutModalProps> = ({
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(
     null,
   );
-  const { listRef, thumbRef, thumbTop, thumbHeight, visible } =
-    useCustomScroll(workouts);
+  const { listRef, thumbRef, thumbTop, thumbHeight, visible } = useCustomScroll(
+    workouts,
+    isOpen,
+  );
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {

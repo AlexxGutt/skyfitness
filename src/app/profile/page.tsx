@@ -28,9 +28,8 @@ const ProfilePage = () => {
   const { sortWorkouts } = useSortWorkouts();
   const { allCourses } = useAppSelector((state) => state.courses);
 
-  // Состояния для модального окна
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
-  const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]); // ← убрали any, добавили тип Workout[]
+  const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
 
   const fetchUserData = useCallback(() => {
     if (access) {
