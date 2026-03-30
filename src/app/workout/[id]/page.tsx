@@ -11,6 +11,7 @@ import {
 } from "@/service/api/apiWorkout";
 import { getProgressWorkout } from "@/service/api/apiWorkout";
 import { useParseExerciseName } from "@/hooks/useParseExerciseName";
+import { useProgressStatus } from "@/hooks/useProgressStatus";
 import ProgressModal, { Exercise } from "@/components/Modal/ProgressModal";
 import { useRestoreCurrentCourse } from "@/hooks/useRestoreCurrentCourse";
 import { useRestoreCurrentWorkout } from "@/hooks/useRestoreCurrentWorkout";
@@ -31,6 +32,10 @@ const WorkoutPage = () => {
   const { currentCourse, currentWorkout, currentProgressWorkout } =
     useAppSelector((state) => state.courses);
   const { parseExerciseName } = useParseExerciseName();
+  const { status, buttonText } = useProgressStatus(
+    currentWorkout,
+    currentProgressWorkout,
+  );
 
   const [loading, setLoading] = useState(true);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
@@ -67,6 +72,12 @@ const WorkoutPage = () => {
       alert("Авторизуйтесь");
       return;
     }
+
+    if (status === "restart") {
+      // TODO: Очистка прогресса
+      return;
+    }
+
     setIsProgressModalOpen(true);
   };
 
@@ -76,8 +87,6 @@ const WorkoutPage = () => {
     const workoutId = Array.isArray(id) ? id[0] : id;
     if (!workoutId) return;
 
-    // Для каждого упражнения: если пользователь ввёл значение — берём его,
-    // иначе берём старое из currentProgressWorkout
     const mergedProgress: Record<string, number> = {};
     currentWorkout.exercises?.forEach((exercise) => {
       if (
@@ -95,8 +104,6 @@ const WorkoutPage = () => {
       currentWorkout.exercises?.map((exercise) => {
         return mergedProgress[exercise._id] || 0;
       }) || [];
-
-    console.log("Sending progressArray:", progressArray);
 
     try {
       await changeProgressWorkout(access, currentCourse._id, workoutId, {
@@ -182,7 +189,7 @@ const WorkoutPage = () => {
             </div>
 
             <button className={styles.fillButton} onClick={handleFillProgress}>
-              Заполнить свой прогресс
+              {buttonText}
             </button>
           </div>
         </div>
