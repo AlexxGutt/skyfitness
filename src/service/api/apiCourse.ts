@@ -8,7 +8,6 @@ export const getAllCours = () => {
 };
 
 export const getAddCourse = (token: string, id: string) => {
-  console.log(`ID: ${id}`);
   return axios.post(
     BASE_URL + "/api/fitness/users/me/courses",
     { courseId: id },

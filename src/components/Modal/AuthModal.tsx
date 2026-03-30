@@ -7,11 +7,12 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import {
   clearError,
   setAccess,
-  setError,
   setUserEmail,
   setUsername,
 } from "@/store/features/authSlice";
 import { getSignIn, getSignUp } from "@/service/api/apiAuth";
+import NotificationModal from "@/components/Modal/NotificationModal";
+import axios from "axios";
 
 export type AuthModalProps = {
   isOpen: boolean;
@@ -22,11 +23,17 @@ export type AuthModalProps = {
 
 const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
+  const { isLoading } = useAppSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [errorField, setErrorField] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({ isOpen: false, message: "" });
 
   const isSignUp = mode === "sign-up";
 
@@ -41,25 +48,41 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
   }, [onClose]);
 
   const handleSwitchMode = () => {
+    setError("");
+    setErrorField(null);
     dispatch(clearError());
     onSwitchMode();
   };
 
   const validateForm = () => {
-    if (!email.trim()) return "Введите email";
-    if (!password) return "Введите пароль";
-    if (isSignUp && password !== confirmPassword) return "Пароли не совпадают";
-    if (isSignUp && password.length < 6)
+    if (!email.trim()) {
+      setErrorField("email");
+      return "Введите email";
+    }
+    if (!password) {
+      setErrorField("password");
+      return "Введите пароль";
+    }
+    if (isSignUp && password !== confirmPassword) {
+      setErrorField("confirmPassword");
+      return "Пароли не совпадают";
+    }
+    if (isSignUp && password.length < 6) {
+      setErrorField("password");
       return "Пароль должен содержать минимум 6 символов";
+    }
+    setErrorField(null);
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setErrorField(null);
 
     const validationError = validateForm();
     if (validationError) {
-      dispatch(setError(validationError));
+      setError(validationError);
       return;
     }
 
@@ -67,30 +90,32 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
 
     if (isSignUp) {
       getSignUp(data)
-        .then((res) => {
-          console.log("Регистрация успешна:", res.data);
-          dispatch(clearError());
-          onClose();
+        .then(() => {
+          setNotification({ isOpen: true, message: "Успешная регистрация" });
+          setTimeout(() => {
+            setNotification({ isOpen: false, message: "" });
+            onClose();
+          }, 2000);
         })
         .catch((err) => {
-          const errMessage = err.response?.data?.message;
-          console.log("Ошибка регистрации:", errMessage);
-          dispatch(setError(errMessage));
+          const errMessage = axios.isAxiosError(err)
+            ? err.response?.data?.message || "Ошибка регистрации"
+            : "Ошибка регистрации";
+          setError(errMessage);
         });
     } else {
       getSignIn(data)
         .then((res) => {
-          console.log("Вход успешен:", res.data);
           dispatch(setAccess(res.data.token));
           dispatch(setUserEmail(email));
           dispatch(setUsername(email.split("@")[0]));
-          dispatch(clearError());
           onClose();
         })
         .catch((err) => {
-          const errMessage = err.response?.data?.message;
-          console.log("Ошибка входа:", errMessage);
-          dispatch(setError(errMessage));
+          const errMessage = axios.isAxiosError(err)
+            ? err.response?.data?.message || "Ошибка входа"
+            : "Ошибка входа";
+          setError(errMessage);
         });
     }
   };
@@ -120,7 +145,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
               placeholder="Эл. почта"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={styles.input}
+              className={`${styles.input} ${errorField === "email" ? styles.inputError : ""}`}
               disabled={isLoading}
               required
             />
@@ -129,7 +154,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
               placeholder="Пароль"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={styles.input}
+              className={`${styles.input} ${errorField === "password" ? styles.inputError : ""}`}
               disabled={isLoading}
               required
             />
@@ -139,7 +164,7 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
                 placeholder="Повторите пароль"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className={styles.input}
+                className={`${styles.input} ${errorField === "confirmPassword" ? styles.inputError : ""}`}
                 disabled={isLoading}
                 required
               />
@@ -168,6 +193,13 @@ const AuthModal = ({ isOpen, mode, onClose, onSwitchMode }: AuthModalProps) => {
           </form>
         </div>
       </div>
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type="success"
+        message={notification.message}
+        onClose={() => setNotification({ isOpen: false, message: "" })}
+      />
     </>
   );
 };

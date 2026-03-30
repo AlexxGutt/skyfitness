@@ -14,6 +14,8 @@ import { getUsersCourse } from "@/service/api/apiCourse";
 import { setCurrentCourse, setUsersCourse } from "@/store/features/courseSlice";
 import { getCourseWorkout } from "@/service/api/apiWorkout";
 import { useSortWorkouts } from "@/hooks/useSortWorkouts";
+import NotificationModal from "@/components/Modal/NotificationModal";
+import axios from "axios";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -31,6 +33,15 @@ const ProfilePage = () => {
 
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({ isOpen: false, message: "" });
+
+  const showNotification = (message: string) => {
+    setNotification({ isOpen: true, message });
+    setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
+  };
 
   const fetchUserData = useCallback(() => {
     if (access) {
@@ -45,7 +56,10 @@ const ProfilePage = () => {
           setCourseProgress(progress);
         })
         .catch((err) => {
-          console.log("Ошибка:", err);
+          const errorMessage = axios.isAxiosError(err)
+            ? err.response?.data?.message || "Ошибка"
+            : "Ошибка";
+          showNotification(errorMessage);
         });
     }
   }, [access, dispatch]);
@@ -79,8 +93,10 @@ const ProfilePage = () => {
         setIsWorkoutModalOpen(true);
       })
       .catch((err) => {
-        const error = err.response.data.message;
-        alert(error);
+        const errorMessage = axios.isAxiosError(err)
+          ? err.response?.data?.message || "Ошибка загрузки тренировок"
+          : "Ошибка загрузки тренировок";
+        showNotification(errorMessage);
       });
   };
 
@@ -153,6 +169,13 @@ const ProfilePage = () => {
         workouts={selectedWorkouts}
         onStartWorkout={handleStartWorkout}
         courseId={currentCourse?._id || ""}
+      />
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type="error"
+        message={notification.message}
+        onClose={() => setNotification({ isOpen: false, message: "" })}
       />
     </>
   );

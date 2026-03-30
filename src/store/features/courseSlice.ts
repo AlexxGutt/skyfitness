@@ -58,6 +58,10 @@ const courseSlice = createSlice({
       state.error = action.payload;
       state.isLoading = false;
     },
+    clearProgressCourse: (state) => {
+      state.currentProgressWorkout = {};
+      localStorage.removeItem("currentProgressWorkout");
+    },
     clearError: (state) => {
       state.error = null;
     },
@@ -73,5 +77,6 @@ export const {
   setCurrentCourse,
   setCurrentWorkout,
   setCurrentProgressWorkout,
+  clearProgressCourse,
 } = courseSlice.actions;
 export const courseSliceReducer = courseSlice.reducer;
