@@ -14,15 +14,6 @@ import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
 import { setLoading } from "@/store/features/loaderSlice";
 
-export async function generateStaticParams() {
-  const res = await fetch("https://wedev-api.sky.pro//api/fitness/courses");
-  const courses = await res.json();
-
-  return courses.map((course: { _id: string }) => ({
-    id: course._id,
-  }));
-}
-
 const CoursePage = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
