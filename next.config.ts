@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
   basePath: isProd ? `/${repoName}` : "",
   assetPrefix: isProd ? `/${repoName}` : "",
 
+  output: "export",
+
   images: {
     unoptimized: true,
   },
