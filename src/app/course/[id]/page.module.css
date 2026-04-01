@@ -85,6 +85,10 @@
   margin-top: 0;
 }
 
+.ctaImageGreenMobile {
+  display: none;
+}
+
 .benefitCard {
   width: 368px;
   display: flex;
@@ -281,12 +285,10 @@
 
 .ctaButton:hover {
   background: #c6ff00;
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(198, 255, 0, 0.4);
 }
 
 .ctaButton:active {
-  transform: translateY(0);
   background: #000000;
   color: #ffffff;
 }
@@ -329,4 +331,110 @@
   pointer-events: none;
   transform: rotate(-3deg);
   z-index: 5;
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+  }
+  .content {
+    padding: 40px 16px;
+  }
+  .courseTitle {
+    display: none;
+  }
+  .sectionTitle {
+    font-size: 24px;
+    margin: 0 0 24px;
+  }
+  .heroBlock {
+    margin-bottom: 40px;
+  }
+  .benefitsGrid {
+    flex-direction: column;
+  }
+  .benefitCard {
+    width: 100%;
+  }
+  .benefitText {
+    font-style: Regular;
+    font-size: 18px;
+  }
+  .directionsTitle {
+    margin: 40px 0 24px;
+    font-style: Medium;
+    font-size: 24px;
+  }
+  .directionsGrid {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .ctaImageSportsman {
+    width: 334px;
+    height: 347;
+    bottom: -255px;
+    right: -85px;
+    z-index: 2;
+  }
+  .callToAction {
+    overflow: visible;
+    z-index: 10;
+    margin-top: 156px;
+    height: 400px;
+  }
+  .ctaContent {
+    position: relative;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 30;
+  }
+  .ctaTitle {
+    font-style: medium;
+    font-size: 32px;
+  }
+  .ctaList {
+    width: 100%;
+    max-width: 283px;
+    font-style: regular;
+    font-size: 18px;
+  }
+  .ctaListItem {
+    font-size: 18px;
+  }
+  .ctaButton {
+    margin: 0;
+    width: 100%;
+  }
+  .ctaImages {
+    overflow: visible;
+    z-index: 1;
+    height: 0;
+  }
+  .ctaImageBlack {
+    width: 32px;
+    height: 25px;
+    border-style: 6px solid rgba(0, 0, 0, 1);
+    top: -572.59px;
+    right: 145px;
+    z-index: 2;
+  }
+  .ctaImageGreen {
+    display: none;
+  }
+  .ctaImageGreenMobile {
+    z-index: 2;
+    width: 582px;
+    height: 699px;
+    display: block;
+    position: absolute;
+    bottom: -570px;
+    right: -35px;
+    transform: rotate(9deg);
+  }
 }

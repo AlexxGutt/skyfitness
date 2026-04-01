@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { CourseType } from "@/sharedTypes/sharedTypes";
 import {
@@ -43,6 +43,19 @@ const Card = ({
   const router = useRouter();
   const { access } = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 480);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const {
     nameRU,
     nameEN,
@@ -181,7 +194,7 @@ const Card = ({
               width={834}
               height={557}
               className={styles.image}
-              style={getImageStyle(nameEN)}
+              style={getImageStyle(nameEN, isMobile)}
               loading="eager"
             />
           </div>

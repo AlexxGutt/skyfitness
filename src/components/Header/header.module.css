@@ -145,3 +145,82 @@
   color: #000;
   font-family: "Roboto", sans-serif;
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 40px 16px 0 16px;
+    gap: 16px;
+  }
+
+  .logoSection {
+    flex-shrink: 1;
+  }
+
+  .logoLink {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .logoWrapper img {
+    width: 220px;
+    height: 35px;
+    object-fit: contain;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .loginButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    width: auto;
+    min-width: 83px;
+    height: 36px;
+    background: #bcec30;
+    border: none;
+    border-radius: 46px;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .avatarInitial {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .userName {
+    font-size: 16px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .arrowIcon {
+    width: 16px;
+    height: 16px;
+  }
+}

@@ -37,3 +37,10 @@ body {
 * {
   -ms-overflow-style: none;
 }
+
+@media (max-width: 480px) {
+  body {
+    overflow-x: hidden;
+    background: #fafafa;
+  }
+}

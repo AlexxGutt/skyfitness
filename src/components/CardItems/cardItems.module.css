@@ -29,3 +29,33 @@
 .error {
   color: #f44336;
 }
+
+@media (max-width: 480px) {
+  .section {
+    width: 100%;
+    background: #fafafa;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .loading,
+  .error,
+  .empty {
+    text-align: center;
+    padding: 40px 16px;
+    font-size: 16px;
+    color: #666;
+  }
+
+  .error {
+    color: #f44336;
+  }
+}

@@ -17,6 +17,7 @@ import { useSortWorkouts } from "@/hooks/useSortWorkouts";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
 import { setLoading } from "@/store/features/loaderSlice";
+import ButtonUpToTop from "@/components/Buttons/ButtonUpToTop";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -166,6 +167,9 @@ const ProfilePage = () => {
               onCourseChange={handleCourseChange}
               onStartCourse={handleStartCourse}
             />
+          </div>
+          <div className={styles.buttonContainer}>
+            <ButtonUpToTop />
           </div>
         </div>
       </main>
