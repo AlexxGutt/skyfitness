@@ -4,7 +4,7 @@ import { useState } from "react";
 import Header from "@/components/Header/Header";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 import { useEffect, useMemo } from "react";
 import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
@@ -12,12 +12,24 @@ import { getCourseImage } from "@/constants/cardConstants";
 import { getAddCourse } from "@/service/api/apiCourse";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
+import { setLoading } from "@/store/features/loaderSlice";
 
 const CoursePage = () => {
+  const dispatch = useAppDispatch();
   const { id } = useParams();
   const { allCourses } = useAppSelector((state) => state.courses);
   const { access } = useAppSelector((state) => state.auth);
   const [isMobile, setIsMobile] = useState(false);
+  const course = useMemo(() => {
+    if (id && allCourses.length > 0) {
+      return allCourses.find((c) => c._id === id) || null;
+    }
+    return null;
+  }, [id, allCourses]);
+
+  useEffect(() => {
+    dispatch(setLoading(false));
+  }, [dispatch]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -34,13 +46,6 @@ const CoursePage = () => {
     isOpen: boolean;
     message: string;
   }>({ isOpen: false, message: "" });
-
-  const course = useMemo(() => {
-    if (id && allCourses.length > 0) {
-      return allCourses.find((c) => c._id === id) || null;
-    }
-    return null;
-  }, [id, allCourses]);
 
   useEffect(() => {}, [access]);
 
@@ -130,6 +135,7 @@ const CoursePage = () => {
                   width={heroImageStyle.width}
                   height={heroImageStyle.height}
                   className={styles.courseImage}
+                  loading="eager"
                 />
               </div>
             </div>
