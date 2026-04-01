@@ -194,3 +194,10 @@
   background: #bcec30;
   border-color: #bcec30;
 }
+
+@media (max-width: 480px) {
+  .modalContent {
+    width: 100%;
+    max-width: calc(100vw - 16px);
+  }
+}

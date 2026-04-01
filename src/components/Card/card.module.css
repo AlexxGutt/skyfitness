@@ -35,7 +35,7 @@
 .image {
   position: absolute;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
@@ -178,7 +178,6 @@
 
 .progressBar {
   width: 100%;
-  max-width: 300px;
   height: 6px;
   border-radius: 50px;
   background: #f7f7f7;
@@ -194,7 +193,6 @@
 
 .actionButton {
   width: 100%;
-  max-width: 300px;
   height: 52px;
   display: flex;
   flex-direction: row;
@@ -227,7 +225,6 @@
 @media (max-width: 480px) {
   .card {
     width: 100%;
-    max-width: 343px;
     min-height: auto;
     display: flex;
     flex-direction: column;
@@ -244,8 +241,6 @@
 
   .imageContainer {
     width: 100%;
-    max-width: 343px;
-    height: auto;
     aspect-ratio: 343 / 325;
     position: relative;
     overflow: hidden;
@@ -260,7 +255,7 @@
     position: absolute;
     height: auto;
     min-height: 100%;
-    object-fit: cover;
+    object-fit: cover !important;
   }
 
   .content {
@@ -317,7 +312,7 @@
   }
 
   .progressText {
-    width: 140px;
+    width: 100%;
     color: #000000;
     font-family: "Roboto", sans-serif;
     font-weight: 400;
@@ -375,5 +370,15 @@
     border: none;
     background: transparent;
     cursor: pointer;
+  }
+
+  .progressText {
+    font-size: 16px;
+  }
+
+  .actionButton {
+    margin-top: 30px;
+    height: 48px;
+    font-size: 14px;
   }
 }

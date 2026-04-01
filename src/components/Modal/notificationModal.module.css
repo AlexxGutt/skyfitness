@@ -156,3 +156,10 @@
 .confirm {
   color: rgba(0, 0, 0, 1);
 }
+
+@media (max-width: 480px) {
+  .modal {
+    width: 100%;
+    max-width: calc(100vw - 16px);
+  }
+}

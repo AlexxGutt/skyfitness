@@ -4,7 +4,7 @@ import { useState } from "react";
 import Header from "@/components/Header/Header";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/store/store";
+import { useAppSelector } from "@/store/store";
 import { useEffect, useMemo } from "react";
 import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
@@ -12,13 +12,23 @@ import { getCourseImage } from "@/constants/cardConstants";
 import { getAddCourse } from "@/service/api/apiCourse";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
-import { setLoading } from "@/store/features/loaderSlice";
 
 const CoursePage = () => {
-  const dispatch = useAppDispatch();
   const { id } = useParams();
   const { allCourses } = useAppSelector((state) => state.courses);
   const { access } = useAppSelector((state) => state.auth);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 480);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const [notification, setNotification] = useState<{
     isOpen: boolean;
@@ -34,11 +44,8 @@ const CoursePage = () => {
 
   useEffect(() => {}, [access]);
 
-  useEffect(() => {
-    dispatch(setLoading(false));
-  }, [dispatch]);
-
   const loading = allCourses.length === 0;
+
   const benefits = course?.fitting || [""];
   const directions = course?.directions || [""];
 
@@ -61,9 +68,6 @@ const CoursePage = () => {
       showNotification("Авторизуйтесь, чтобы добавить курс");
       return;
     }
-
-    dispatch(setLoading(true));
-
     getAddCourse(access, ID)
       .then(() => {
         showNotification("Курс успешно добавлен!");
@@ -73,13 +77,10 @@ const CoursePage = () => {
           ? err.response?.data?.message || "Ошибка добавления курса"
           : "Ошибка добавления курса";
         showNotification(errorMessage);
-      })
-      .finally(() => {
-        dispatch(setLoading(false));
       });
   };
 
-  const heroImageStyle = getHeroImageStyle(course?.nameEN || "Yoga");
+  const heroImageStyle = getHeroImageStyle(course?.nameEN || "Yoga", isMobile);
 
   if (loading) {
     return (
@@ -148,6 +149,13 @@ const CoursePage = () => {
           <h2 className={styles.directionsTitle}>Направления</h2>
 
           <div className={styles.directionsBlock}>
+            <Image
+              src="/Vector green.svg"
+              alt=""
+              width={670}
+              height={491}
+              className={styles.ctaImageGreenMobile}
+            />
             <Image
               src="/sportsman.svg"
               alt=""

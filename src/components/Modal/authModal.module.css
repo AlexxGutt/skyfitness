@@ -199,3 +199,9 @@
     transform: translate(-50%, -50%);
   }
 }
+
+@media (max-width: 480px) {
+  .formWrapper {
+    max-width: calc(100vw - 16px);
+  }
+}
