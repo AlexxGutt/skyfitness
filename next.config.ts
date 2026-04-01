@@ -8,8 +8,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
   allowedDevOrigins: ["192.168.0.108"],
 
-  output: "export",
-
   basePath: isProd ? `/${repoName}` : "",
   assetPrefix: isProd ? `/${repoName}` : "",
 
