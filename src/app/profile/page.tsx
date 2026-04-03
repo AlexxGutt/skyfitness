@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useAppSelector, useAppDispatch } from "@/store/store";
-import { clearUser } from "@/store/features/authSlice";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header/Header";
 import CardItems from "@/components/CardItems/CardItems";
@@ -14,9 +13,11 @@ import { setLoading } from "@/store/features/loaderSlice";
 import ButtonUpToTop from "@/components/Buttons/ButtonUpToTop";
 import { useUserData } from "@/hooks/useUserCourse";
 import { useCourseWorkouts } from "@/hooks/useCourseWorkouts";
+import { useLogout } from "@/hooks/useLogout";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
+  const { logout } = useLogout();
   const router = useRouter();
   const { username, email, access, isHydrated } = useAppSelector(
     (state) => state.auth,
@@ -33,7 +34,6 @@ const ProfilePage = () => {
     fetchUserData();
   }, [fetchUserData]);
 
-  // Используем универсальный хук для работы с тренировками
   const {
     isModalOpen,
     selectedWorkouts,
@@ -58,9 +58,10 @@ const ProfilePage = () => {
     setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
   };
 
-  const handleLogout = () => {
-    dispatch(clearUser());
-    router.replace("/");
+  const handleLogout = async () => {
+    await logout({
+      redirectTo: "/",
+    });
   };
 
   const handleCourseChange = async () => {
