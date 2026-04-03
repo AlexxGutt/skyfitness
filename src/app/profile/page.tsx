@@ -7,17 +7,13 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header/Header";
 import CardItems from "@/components/CardItems/CardItems";
 import WorkoutModal from "@/components/Modal/WorkoutModal";
-import { Workout } from "@/components/Modal/WorkoutModal";
 import styles from "./page.module.css";
 import { useEffect, useState, useMemo } from "react";
-import { setCurrentCourse } from "@/store/features/courseSlice";
-import { getCourseWorkout } from "@/service/api/apiWorkout";
-import { useSortWorkouts } from "@/hooks/useSortWorkouts";
 import NotificationModal from "@/components/Modal/NotificationModal";
-import axios from "axios";
 import { setLoading } from "@/store/features/loaderSlice";
 import ButtonUpToTop from "@/components/Buttons/ButtonUpToTop";
 import { useUserData } from "@/hooks/useUserCourse";
+import { useCourseWorkouts } from "@/hooks/useCourseWorkouts";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -25,18 +21,29 @@ const ProfilePage = () => {
   const { username, email, access, isHydrated } = useAppSelector(
     (state) => state.auth,
   );
-  const { currentCourse, usersCourse, allCourses } = useAppSelector(
-    (state) => state.courses,
-  );
+  const { usersCourse } = useAppSelector((state) => state.courses);
   const [refreshKey, setRefreshKey] = useState(0);
-  const { sortWorkouts } = useSortWorkouts();
   const { fetchUserData } = useUserData();
-  const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
-  const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
   const [notification, setNotification] = useState<{
     isOpen: boolean;
     message: string;
   }>({ isOpen: false, message: "" });
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
+
+  // Используем универсальный хук для работы с тренировками
+  const {
+    isModalOpen,
+    selectedWorkouts,
+    currentCourseId,
+    openWorkoutsModal,
+    closeWorkoutsModal,
+    startWorkout,
+  } = useCourseWorkouts({
+    onError: (message) => showNotification(message),
+  });
 
   const selectedCourseIds = useMemo(() => {
     return usersCourse?.selectedCourses || [];
@@ -56,36 +63,13 @@ const ProfilePage = () => {
     router.replace("/");
   };
 
-  const handleCourseChange = () => {
-    fetchUserData();
+  const handleCourseChange = async () => {
+    await fetchUserData();
     setRefreshKey((prev) => prev + 1);
   };
 
   const handleStartCourse = async (courseId: string) => {
-    if (!access) return;
-
-    const course = allCourses.find((c) => c._id === courseId);
-    if (course) {
-      dispatch(setCurrentCourse(course));
-    }
-
-    getCourseWorkout(access, courseId)
-      .then((res) => {
-        const sorted = sortWorkouts(res.data);
-        setSelectedWorkouts(sorted);
-        setIsWorkoutModalOpen(true);
-      })
-      .catch((err) => {
-        const errorMessage = axios.isAxiosError(err)
-          ? err.response?.data?.message || "Ошибка загрузки тренировок"
-          : "Ошибка загрузки тренировок";
-        showNotification(errorMessage);
-      });
-  };
-
-  const handleStartWorkout = (workoutId: string) => {
-    router.push(`/workout/${workoutId}`);
-    setIsWorkoutModalOpen(false);
+    await openWorkoutsModal(courseId);
   };
 
   useEffect(() => {
@@ -147,11 +131,11 @@ const ProfilePage = () => {
       </main>
 
       <WorkoutModal
-        isOpen={isWorkoutModalOpen}
-        onClose={() => setIsWorkoutModalOpen(false)}
+        isOpen={isModalOpen}
+        onClose={closeWorkoutsModal}
         workouts={selectedWorkouts}
-        onStartWorkout={handleStartWorkout}
-        courseId={currentCourse?._id || ""}
+        onStartWorkout={startWorkout}
+        courseId={currentCourseId || ""}
       />
 
       <NotificationModal

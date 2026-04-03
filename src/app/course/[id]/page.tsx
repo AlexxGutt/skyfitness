@@ -9,13 +9,15 @@ import { useEffect, useMemo } from "react";
 import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
 import { getCourseImage } from "@/constants/cardConstants";
-import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
+import { getAddCourse } from "@/service/api/apiCourse";
+import WorkoutModal from "@/components/Modal/WorkoutModal";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
 import { setLoading } from "@/store/features/loaderSlice";
 import { useUserData } from "@/hooks/useUserCourse";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
 import { useAuthModal } from "@/hooks/useAuthModal";
+import { useCourseWorkouts } from "@/hooks/useCourseWorkouts";
 import AuthModal from "@/components/Modal/AuthModal";
 
 const CoursePage = () => {
@@ -28,6 +30,18 @@ const CoursePage = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
+
+  // Используем универсальный хук для работы с тренировками
+  const {
+    isModalOpen,
+    selectedWorkouts,
+    currentCourseId,
+    openWorkoutsModal,
+    closeWorkoutsModal,
+    startWorkout,
+  } = useCourseWorkouts({
+    onError: (message) => showNotification(message),
+  });
 
   const course = useMemo(() => {
     if (id && allCourses.length > 0) {
@@ -86,38 +100,38 @@ const CoursePage = () => {
     setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
   };
 
-  const handleAddCourse = async () => {
+  // Основная логика кнопки
+  const handleMainButtonClick = async () => {
     const ID = course?._id as string;
 
+    // Если не авторизован — открываем модалку авторизации
     if (!access) {
       return openModal("sign-in");
     }
 
-    setIsLoading(true);
-    dispatch(setLoading(true));
+    // Если курс не добавлен — добавляем
+    if (!isCourseAdded) {
+      setIsLoading(true);
+      dispatch(setLoading(true));
 
-    try {
-      if (isCourseAdded) {
-        // Если курс уже добавлен — удаляем
-        await getDeleteCourse(access, ID);
-        showNotification("Курс удален из профиля");
-      } else {
-        // Если курс не добавлен — добавляем
+      try {
         await getAddCourse(access, ID);
         showNotification("Курс успешно добавлен!");
+        await fetchUserData(); // Обновляем данные, кнопка изменится
+      } catch (err) {
+        const errorMessage = axios.isAxiosError(err)
+          ? err.response?.data?.message || "Ошибка добавления курса"
+          : "Ошибка добавления курса";
+        showNotification(errorMessage);
+      } finally {
+        setIsLoading(false);
+        dispatch(setLoading(false));
       }
-
-      // Обновляем данные пользователя после операции
-      await fetchUserData();
-    } catch (err) {
-      const errorMessage = axios.isAxiosError(err)
-        ? err.response?.data?.message || "Ошибка"
-        : "Ошибка";
-      showNotification(errorMessage);
-    } finally {
-      setIsLoading(false);
-      dispatch(setLoading(false));
+      return;
     }
+
+    // Если курс добавлен — открываем модальное окно с тренировками
+    await openWorkoutsModal(ID);
   };
 
   const getButtonText = () => {
@@ -125,7 +139,7 @@ const CoursePage = () => {
     if (!isCourseAdded) return "Добавить курс";
     if (progress === 100) return "Начать заново";
     if (progress > 0) return `Продолжить (${progress}%)`;
-    if (progress === 0) return "Начать";
+    return "Начать";
   };
 
   const heroImageStyle = getHeroImageStyle(course?.nameEN || "Yoga", isMobile);
@@ -242,7 +256,7 @@ const CoursePage = () => {
               </ul>
               <button
                 className={styles.ctaButton}
-                onClick={handleAddCourse}
+                onClick={handleMainButtonClick}
                 disabled={isLoading}
               >
                 {isLoading ? "Загрузка..." : getButtonText()}
@@ -269,12 +283,21 @@ const CoursePage = () => {
         </div>
       </main>
 
+      <WorkoutModal
+        isOpen={isModalOpen}
+        onClose={closeWorkoutsModal}
+        workouts={selectedWorkouts}
+        onStartWorkout={startWorkout}
+        courseId={currentCourseId || ""}
+      />
+
       <NotificationModal
         isOpen={notification.isOpen}
         type="success"
         message={notification.message}
         onClose={() => setNotification({ isOpen: false, message: "" })}
       />
+
       <AuthModal
         isOpen={isOpen}
         mode={mode}
