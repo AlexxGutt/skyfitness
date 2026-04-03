@@ -31,7 +31,6 @@ const CoursePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
 
-  // Используем универсальный хук для работы с тренировками
   const {
     isModalOpen,
     selectedWorkouts,
@@ -100,16 +99,13 @@ const CoursePage = () => {
     setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
   };
 
-  // Основная логика кнопки
   const handleMainButtonClick = async () => {
     const ID = course?._id as string;
 
-    // Если не авторизован — открываем модалку авторизации
     if (!access) {
       return openModal("sign-in");
     }
 
-    // Если курс не добавлен — добавляем
     if (!isCourseAdded) {
       setIsLoading(true);
       dispatch(setLoading(true));
@@ -117,7 +113,7 @@ const CoursePage = () => {
       try {
         await getAddCourse(access, ID);
         showNotification("Курс успешно добавлен!");
-        await fetchUserData(); // Обновляем данные, кнопка изменится
+        await fetchUserData();
       } catch (err) {
         const errorMessage = axios.isAxiosError(err)
           ? err.response?.data?.message || "Ошибка добавления курса"
@@ -130,7 +126,6 @@ const CoursePage = () => {
       return;
     }
 
-    // Если курс добавлен — открываем модальное окно с тренировками
     await openWorkoutsModal(ID);
   };
 

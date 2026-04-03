@@ -1,4 +1,3 @@
-// hooks/useCourseWorkouts.ts
 "use client";
 
 import { useState } from "react";
@@ -27,7 +26,6 @@ export const useCourseWorkouts = ({ onError }: UseCourseWorkoutsProps = {}) => {
   const [currentCourseId, setCurrentCourseId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Открыть модальное окно с тренировками курса
   const openWorkoutsModal = async (courseId: string) => {
     if (!access) {
       onError?.("Авторизуйтесь, чтобы продолжить");
@@ -39,13 +37,11 @@ export const useCourseWorkouts = ({ onError }: UseCourseWorkoutsProps = {}) => {
     setCurrentCourseId(courseId);
 
     try {
-      // Находим курс в allCourses
       const course = allCourses.find((c) => c._id === courseId);
       if (course) {
         dispatch(setCurrentCourse(course));
       }
 
-      // Загружаем тренировки
       const response = await getCourseWorkout(access, courseId);
       const sortedWorkouts = sortWorkouts(response.data);
       setSelectedWorkouts(sortedWorkouts);
@@ -61,14 +57,12 @@ export const useCourseWorkouts = ({ onError }: UseCourseWorkoutsProps = {}) => {
     }
   };
 
-  // Закрыть модальное окно
   const closeWorkoutsModal = () => {
     setIsModalOpen(false);
     setSelectedWorkouts([]);
     setCurrentCourseId(null);
   };
 
-  // Начать тренировку
   const startWorkout = (workoutId: string) => {
     router.push(`/workout/${workoutId}`);
     closeWorkoutsModal();

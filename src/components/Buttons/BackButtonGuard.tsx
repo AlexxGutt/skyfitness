@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/store";
 
 export const BackButtonGuard = () => {
   const router = useRouter();
-  const pathname = usePathname();
   const { access } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
