@@ -3,8 +3,9 @@
 import { useAppSelector } from "@/store/store";
 import Card from "@/components/Card/Card";
 import Loader from "@/components/Loader/Loader";
-import { CourseType } from "@/sharedTypes/sharedTypes";
+import { useCourseProgress } from "@/hooks/useCourseProgress";
 import styles from "./cardItems.module.css";
+import { CourseType } from "@/sharedTypes/sharedTypes";
 
 export type CardItemsProps = {
   type?: "all" | "user";
@@ -19,9 +20,10 @@ const CardItems = ({
   onCourseChange,
   onStartCourse,
 }: CardItemsProps) => {
-  const { allCourses, isLoading, error, usersCourse } = useAppSelector(
+  const { allCourses, isLoading, error } = useAppSelector(
     (state) => state.courses,
   );
+  const { getCourseProgress } = useCourseProgress();
 
   const safeAllCourses = allCourses || [];
 
@@ -36,23 +38,6 @@ const CardItems = ({
       );
     }
   }
-
-  const calculateProgress = (courseId: string): number => {
-    const courseProgress = usersCourse?.courseProgress?.find(
-      (cp) => cp.courseId === courseId,
-    );
-    if (!courseProgress) return 0;
-
-    const course = safeAllCourses.find((c) => c._id === courseId);
-    if (!course || !course.workouts) return 0;
-
-    const totalWorkouts = course.workouts.length;
-    const completedWorkouts = courseProgress.workoutsProgress.filter(
-      (wp) => wp.workoutCompleted,
-    ).length;
-
-    return Math.round((completedWorkouts / totalWorkouts) * 100);
-  };
 
   if (isLoading) {
     return (
@@ -91,7 +76,7 @@ const CardItems = ({
             course={course}
             variant={type === "user" ? "delete" : "add"}
             onSuccess={onCourseChange}
-            progress={calculateProgress(course._id)}
+            progress={getCourseProgress(course._id)}
             onStartCourse={onStartCourse}
           />
         ))}

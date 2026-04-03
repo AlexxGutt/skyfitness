@@ -9,15 +9,15 @@ import CardItems from "@/components/CardItems/CardItems";
 import WorkoutModal from "@/components/Modal/WorkoutModal";
 import { Workout } from "@/components/Modal/WorkoutModal";
 import styles from "./page.module.css";
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { getUsersCourse } from "@/service/api/apiCourse";
-import { setCurrentCourse, setUsersCourse } from "@/store/features/courseSlice";
+import { useEffect, useState, useMemo } from "react";
+import { setCurrentCourse } from "@/store/features/courseSlice";
 import { getCourseWorkout } from "@/service/api/apiWorkout";
 import { useSortWorkouts } from "@/hooks/useSortWorkouts";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
 import { setLoading } from "@/store/features/loaderSlice";
 import ButtonUpToTop from "@/components/Buttons/ButtonUpToTop";
+import { useUserData } from "@/hooks/useUserCourse";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -29,11 +29,8 @@ const ProfilePage = () => {
     (state) => state.courses,
   );
   const [refreshKey, setRefreshKey] = useState(0);
-  const [courseProgress, setCourseProgress] = useState<Record<string, number>>(
-    {},
-  );
   const { sortWorkouts } = useSortWorkouts();
-
+  const { fetchUserData } = useUserData();
   const [isWorkoutModalOpen, setIsWorkoutModalOpen] = useState(false);
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workout[]>([]);
   const [notification, setNotification] = useState<{
@@ -53,31 +50,6 @@ const ProfilePage = () => {
     setNotification({ isOpen: true, message });
     setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
   };
-
-  const fetchUserData = useCallback(() => {
-    if (access) {
-      getUsersCourse(access)
-        .then((res) => {
-          dispatch(setUsersCourse(res.data.user));
-
-          const progress: Record<string, number> = {};
-          res.data.user.selectedCourses?.forEach((courseId: string) => {
-            progress[courseId] = 40;
-          });
-          setCourseProgress(progress);
-        })
-        .catch((err) => {
-          const errorMessage = axios.isAxiosError(err)
-            ? err.response?.data?.message || "Ошибка"
-            : "Ошибка";
-          showNotification(errorMessage);
-        });
-    }
-  }, [access, dispatch]);
-
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
 
   const handleLogout = () => {
     dispatch(clearUser());

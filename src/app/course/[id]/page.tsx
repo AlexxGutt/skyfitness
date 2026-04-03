@@ -9,23 +9,41 @@ import { useEffect, useMemo } from "react";
 import styles from "./page.module.css";
 import { getHeroImageStyle } from "@/constants/coursePageConstants";
 import { getCourseImage } from "@/constants/cardConstants";
-import { getAddCourse } from "@/service/api/apiCourse";
+import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
 import NotificationModal from "@/components/Modal/NotificationModal";
 import axios from "axios";
 import { setLoading } from "@/store/features/loaderSlice";
+import { useUserData } from "@/hooks/useUserCourse";
+import { useCourseProgress } from "@/hooks/useCourseProgress";
 
 const CoursePage = () => {
   const dispatch = useAppDispatch();
+  const { fetchUserData } = useUserData();
+  const { getCourseButtonInfo } = useCourseProgress();
   const { id } = useParams();
   const { allCourses } = useAppSelector((state) => state.courses);
   const { access } = useAppSelector((state) => state.auth);
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const course = useMemo(() => {
     if (id && allCourses.length > 0) {
       return allCourses.find((c) => c._id === id) || null;
     }
     return null;
   }, [id, allCourses]);
+
+  const courseButtonInfo = useMemo(() => {
+    if (!course) return null;
+    return getCourseButtonInfo(course._id);
+  }, [course, getCourseButtonInfo]);
+
+  const isCourseAdded = courseButtonInfo?.isAdded ?? false;
+  const progress = courseButtonInfo?.progress ?? 0;
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   useEffect(() => {
     dispatch(setLoading(false));
@@ -47,8 +65,6 @@ const CoursePage = () => {
     message: string;
   }>({ isOpen: false, message: "" });
 
-  useEffect(() => {}, [access]);
-
   const loading = allCourses.length === 0;
 
   const benefits = course?.fitting || [""];
@@ -67,22 +83,47 @@ const CoursePage = () => {
     setTimeout(() => setNotification({ isOpen: false, message: "" }), 3000);
   };
 
-  const handleAddCourse = () => {
+  const handleAddCourse = async () => {
     const ID = course?._id as string;
+
     if (!access) {
       showNotification("Авторизуйтесь, чтобы добавить курс");
       return;
     }
-    getAddCourse(access, ID)
-      .then(() => {
+
+    setIsLoading(true);
+    dispatch(setLoading(true));
+
+    try {
+      if (isCourseAdded) {
+        // Если курс уже добавлен — удаляем
+        await getDeleteCourse(access, ID);
+        showNotification("Курс удален из профиля");
+      } else {
+        // Если курс не добавлен — добавляем
+        await getAddCourse(access, ID);
         showNotification("Курс успешно добавлен!");
-      })
-      .catch((err) => {
-        const errorMessage = axios.isAxiosError(err)
-          ? err.response?.data?.message || "Ошибка добавления курса"
-          : "Ошибка добавления курса";
-        showNotification(errorMessage);
-      });
+      }
+
+      // Обновляем данные пользователя после операции
+      await fetchUserData();
+    } catch (err) {
+      const errorMessage = axios.isAxiosError(err)
+        ? err.response?.data?.message || "Ошибка"
+        : "Ошибка";
+      showNotification(errorMessage);
+    } finally {
+      setIsLoading(false);
+      dispatch(setLoading(false));
+    }
+  };
+
+  const getButtonText = () => {
+    if (!access) return "Войдите, чтобы добавить курс";
+    if (!isCourseAdded) return "Добавить курс";
+    if (progress === 100) return "Начать заново";
+    if (progress > 0) return `Продолжить (${progress}%)`;
+    if (progress === 0) return "Начать";
   };
 
   const heroImageStyle = getHeroImageStyle(course?.nameEN || "Yoga", isMobile);
@@ -197,8 +238,12 @@ const CoursePage = () => {
                   </li>
                 ))}
               </ul>
-              <button className={styles.ctaButton} onClick={handleAddCourse}>
-                {access ? "Добавить курс" : "Войдите, чтобы добавить курс"}
+              <button
+                className={styles.ctaButton}
+                onClick={handleAddCourse}
+                disabled={isLoading}
+              >
+                {isLoading ? "Загрузка..." : getButtonText()}
               </button>
             </div>
 

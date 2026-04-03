@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserData } from "@/hooks/useUserCourse";
 import { getAllCours } from "@/service/api/apiCourse";
 import {
   setAllCourses,
@@ -14,6 +15,7 @@ import { useDispatch } from "react-redux";
 export default function FetchingCourses() {
   const dispatch = useDispatch();
   const { allCourses, isLoading } = useAppSelector((state) => state.courses);
+  const { fetchUserData } = useUserData();
 
   useEffect(() => {
     if (allCourses.length === 0 && !isLoading) {
@@ -35,6 +37,10 @@ export default function FetchingCourses() {
         });
     }
   }, [dispatch, allCourses.length, isLoading]);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   return null;
 }
