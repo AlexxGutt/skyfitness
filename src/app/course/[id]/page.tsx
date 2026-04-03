@@ -15,6 +15,8 @@ import axios from "axios";
 import { setLoading } from "@/store/features/loaderSlice";
 import { useUserData } from "@/hooks/useUserCourse";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
+import { useAuthModal } from "@/hooks/useAuthModal";
+import AuthModal from "@/components/Modal/AuthModal";
 
 const CoursePage = () => {
   const dispatch = useAppDispatch();
@@ -25,6 +27,7 @@ const CoursePage = () => {
   const { access } = useAppSelector((state) => state.auth);
   const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { isOpen, mode, openModal, closeModal, switchMode } = useAuthModal();
 
   const course = useMemo(() => {
     if (id && allCourses.length > 0) {
@@ -87,8 +90,7 @@ const CoursePage = () => {
     const ID = course?._id as string;
 
     if (!access) {
-      showNotification("Авторизуйтесь, чтобы добавить курс");
-      return;
+      return openModal("sign-in");
     }
 
     setIsLoading(true);
@@ -272,6 +274,12 @@ const CoursePage = () => {
         type="success"
         message={notification.message}
         onClose={() => setNotification({ isOpen: false, message: "" })}
+      />
+      <AuthModal
+        isOpen={isOpen}
+        mode={mode}
+        onClose={closeModal}
+        onSwitchMode={switchMode}
       />
     </>
   );
