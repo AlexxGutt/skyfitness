@@ -10,19 +10,15 @@ import {
 } from "@/constants/cardConstants";
 import styles from "./card.module.css";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import {
-  deleteProgressCourse,
-  getAddCourse,
-  getDeleteCourse,
-} from "@/service/api/apiCourse";
+import { getAddCourse, getDeleteCourse } from "@/service/api/apiCourse";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import NotificationModal, {
   NotificationType,
 } from "@/components/Modal/NotificationModal";
-import { clearProgressCourse } from "@/store/features/courseSlice";
 import { setLoading } from "@/store/features/loaderSlice";
 import GlobalLoader from "@/components/Loader/GlobalLoader";
+import { useResetCourseProgress } from "@/hooks/useResetCourseProgress";
 
 export type CardProps = {
   course: CourseType;
@@ -44,6 +40,11 @@ const Card = ({
   const { access } = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  const { resetProgress } = useResetCourseProgress({
+    onSuccess: (message) => showNotification("success", message),
+    onError: (message) => showNotification("error", message),
+  });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -109,8 +110,7 @@ const Card = ({
 
     try {
       if (isDeleteVariant) {
-        await deleteProgressCourse(access, _id);
-        dispatch(clearProgressCourse());
+        await resetProgress(_id);
       }
 
       const request = isDeleteVariant
@@ -161,22 +161,8 @@ const Card = ({
     e.stopPropagation();
 
     if (progress === 100 && access) {
-      setIsLoading(true);
-      dispatch(setLoading(true));
-
-      try {
-        await deleteProgressCourse(access, _id);
-        showNotification("success", "Прогресс очищен");
-        onSuccess?.();
-      } catch (err) {
-        const errorMessage = axios.isAxiosError(err)
-          ? err.response?.data?.message || "Ошибка при очистке прогресса"
-          : "Ошибка при очистке прогресса";
-        showNotification("error", errorMessage);
-      } finally {
-        setIsLoading(false);
-        dispatch(setLoading(false));
-      }
+      await resetProgress(_id);
+      onSuccess?.();
     } else if (onStartCourse) {
       onStartCourse(_id);
     }

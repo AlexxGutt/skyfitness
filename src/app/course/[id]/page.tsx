@@ -18,12 +18,17 @@ import { useUserData } from "@/hooks/useUserCourse";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import { useCourseWorkouts } from "@/hooks/useCourseWorkouts";
+import { useResetCourseProgress } from "@/hooks/useResetCourseProgress";
 import AuthModal from "@/components/Modal/AuthModal";
 
 const CoursePage = () => {
   const dispatch = useAppDispatch();
   const { fetchUserData } = useUserData();
   const { getCourseButtonInfo } = useCourseProgress();
+  const { resetProgress } = useResetCourseProgress({
+    onSuccess: (message) => showNotification(message),
+    onError: (message) => showNotification(message),
+  });
   const { id } = useParams();
   const { allCourses } = useAppSelector((state) => state.courses);
   const { access } = useAppSelector((state) => state.auth);
@@ -106,6 +111,11 @@ const CoursePage = () => {
       return openModal("sign-in");
     }
 
+    if (progress === 100) {
+      await resetProgress(ID);
+      await fetchUserData();
+      return;
+    }
     if (!isCourseAdded) {
       setIsLoading(true);
       dispatch(setLoading(true));
@@ -125,7 +135,6 @@ const CoursePage = () => {
       }
       return;
     }
-
     await openWorkoutsModal(ID);
   };
 
