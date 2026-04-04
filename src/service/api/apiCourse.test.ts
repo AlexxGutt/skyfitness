@@ -20,7 +20,7 @@ describe("Course API", () => {
   });
 
   describe("getAllCours", () => {
-    it("should fetch all courses successfully", async () => {
+    it("должен успешно получить все курсы", async () => {
       const mockCourses = [
         { _id: "1", name: "Yoga" },
         { _id: "2", name: "Fitness" },
@@ -36,7 +36,7 @@ describe("Course API", () => {
       expect(result).toEqual(mockCourses);
     });
 
-    it("should handle network error", async () => {
+    it("должен обрабатывать сетевую ошибку", async () => {
       const networkError = new Error("Network Error");
       mockedAxios.get.mockRejectedValueOnce(networkError);
 
@@ -45,7 +45,7 @@ describe("Course API", () => {
   });
 
   describe("getAddCourse", () => {
-    it("should add course successfully", async () => {
+    it("должен успешно добавить курс", async () => {
       const mockResponse = { data: { message: "Course added" } };
       mockedAxios.post.mockResolvedValueOnce(mockResponse);
 
@@ -65,7 +65,7 @@ describe("Course API", () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it("should handle unauthorized error", async () => {
+    it("должен обрабатывать ошибку авторизации", async () => {
       const authError = new Error("Unauthorized");
       mockedAxios.post.mockRejectedValueOnce(authError);
 
@@ -76,7 +76,7 @@ describe("Course API", () => {
   });
 
   describe("getUsersCourse", () => {
-    it("should fetch user courses successfully", async () => {
+    it("должен успешно получить курсы пользователя", async () => {
       const mockUserData = {
         data: {
           user: {
@@ -103,7 +103,7 @@ describe("Course API", () => {
       expect(result).toEqual(mockUserData);
     });
 
-    it("should handle invalid token", async () => {
+    it("должен обрабатывать недействительный токен", async () => {
       const invalidTokenError = new Error("Invalid token");
       mockedAxios.get.mockRejectedValueOnce(invalidTokenError);
 
@@ -114,7 +114,7 @@ describe("Course API", () => {
   });
 
   describe("getDeleteCourse", () => {
-    it("should delete course successfully", async () => {
+    it("должен успешно удалить курс", async () => {
       const mockResponse = { data: { message: "Course deleted" } };
       mockedAxios.delete.mockResolvedValueOnce(mockResponse);
 
@@ -133,7 +133,7 @@ describe("Course API", () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it("should handle course not found", async () => {
+    it('должен обрабатывать ошибку "курс не найден"', async () => {
       const notFoundError = new Error("Course not found");
       mockedAxios.delete.mockRejectedValueOnce(notFoundError);
 
@@ -144,7 +144,7 @@ describe("Course API", () => {
   });
 
   describe("deleteProgressCourse", () => {
-    it("should reset course progress successfully", async () => {
+    it("должен успешно сбросить прогресс курса", async () => {
       const mockResponse = { data: { message: "Progress reset" } };
       mockedAxios.patch.mockResolvedValueOnce(mockResponse);
 
@@ -164,7 +164,7 @@ describe("Course API", () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it("should handle course not found when resetting progress", async () => {
+    it('должен обрабатывать ошибку "курс не найден" при сбросе прогресса', async () => {
       const notFoundError = new Error("Course not found");
       mockedAxios.patch.mockRejectedValueOnce(notFoundError);
 

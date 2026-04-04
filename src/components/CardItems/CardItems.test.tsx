@@ -1,10 +1,8 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import CardItems from "./CardItems";
 import * as store from "@/store/store";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
 
-// Мокаем useAppSelector
 jest.mock("@/store/store", () => ({
   useAppSelector: jest.fn(),
 }));
@@ -39,7 +37,6 @@ jest.mock("@/components/Loader/Loader", () => {
   };
 });
 
-// Тестовые данные
 const mockCourses = [
   {
     _id: "course-1",
@@ -84,9 +81,6 @@ describe("CardItems Component", () => {
     });
   });
 
-  // ============================================
-  // 1. ТЕСТЫ СОСТОЯНИЯ ЗАГРУЗКИ
-  // ============================================
   describe("Состояние загрузки", () => {
     it("должен показывать лоадер когда isLoading = true", () => {
       mockUseAppSelector.mockReturnValue({
@@ -101,9 +95,6 @@ describe("CardItems Component", () => {
     });
   });
 
-  // ============================================
-  // 2. ТЕСТЫ ОШИБКИ
-  // ============================================
   describe("Состояние ошибки", () => {
     it("должен показывать сообщение об ошибке", () => {
       const errorMessage = "Ошибка загрузки курсов";
@@ -119,9 +110,6 @@ describe("CardItems Component", () => {
     });
   });
 
-  // ============================================
-  // 3. ТЕСТЫ ПУСТОГО СОСТОЯНИЯ
-  // ============================================
   describe("Пустое состояние", () => {
     it('должен показывать сообщение "Курсы не найдены" для типа "all"', () => {
       mockUseAppSelector.mockReturnValue({
@@ -150,9 +138,6 @@ describe("CardItems Component", () => {
     });
   });
 
-  // ============================================
-  // 4. ТЕСТЫ ОТОБРАЖЕНИЯ КУРСОВ
-  // ============================================
   describe("Отображение курсов", () => {
     it('должен отображать все курсы для типа "all"', () => {
       mockUseAppSelector.mockReturnValue({
@@ -205,7 +190,6 @@ describe("CardItems Component", () => {
 
       render(<CardItems type="all" />);
 
-      // Используем getAllByText и проверяем первый элемент
       const variants = screen.getAllByText(/variant: add/);
       expect(variants.length).toBe(2);
       expect(variants[0]).toBeInTheDocument();
@@ -221,16 +205,12 @@ describe("CardItems Component", () => {
 
       render(<CardItems type="all" />);
 
-      // Используем getAllByText и проверяем первый элемент
       const progresses = screen.getAllByText(/progress: 80/);
       expect(progresses.length).toBe(2);
       expect(progresses[0]).toBeInTheDocument();
     });
   });
 
-  // ============================================
-  // 5. ТЕСТЫ ПРОГРЕССА
-  // ============================================
   describe("Расчет прогресса", () => {
     it("должен вызывать getCourseProgress для каждого курса", () => {
       mockUseAppSelector.mockReturnValue({

@@ -22,7 +22,7 @@ describe("Workout API", () => {
   });
 
   describe("getCourseWorkout", () => {
-    it("should fetch course workouts successfully", async () => {
+    it("должен успешно получить тренировки курса", async () => {
       const mockWorkouts = {
         data: [
           { _id: "workout-1", name: "Yoga Basics" },
@@ -46,7 +46,7 @@ describe("Workout API", () => {
       expect(result).toEqual(mockWorkouts);
     });
 
-    it("should handle course not found error", async () => {
+    it("должен обрабатывать ошибку 'курс не найден'", async () => {
       const error = new Error("Course not found");
       mockedAxios.get.mockRejectedValueOnce(error);
 
@@ -57,7 +57,7 @@ describe("Workout API", () => {
   });
 
   describe("getDataWorkout", () => {
-    it("should fetch workout data successfully", async () => {
+    it("должен успешно получить данные тренировки", async () => {
       const mockWorkoutData = {
         data: {
           _id: mockWorkoutId,
@@ -86,7 +86,7 @@ describe("Workout API", () => {
       expect(result).toEqual(mockWorkoutData);
     });
 
-    it("should handle workout not found", async () => {
+    it("должен обрабатывать ошибку 'тренировка не найдена'", async () => {
       const error = new Error("Workout not found");
       mockedAxios.get.mockRejectedValueOnce(error);
 
@@ -97,7 +97,7 @@ describe("Workout API", () => {
   });
 
   describe("getProgressWorkout", () => {
-    it("should fetch workout progress successfully", async () => {
+    it("должен успешно получить прогресс тренировки", async () => {
       const mockProgress = {
         data: {
           progressData: [10, 20, 15],
@@ -125,7 +125,7 @@ describe("Workout API", () => {
       expect(result).toEqual(mockProgress);
     });
 
-    it("should handle no progress found", async () => {
+    it("должен обрабатывать ошибку 'прогресс не найден'", async () => {
       const error = new Error("Progress not found");
       mockedAxios.get.mockRejectedValueOnce(error);
 
@@ -138,7 +138,7 @@ describe("Workout API", () => {
   describe("changeProgressWorkout", () => {
     const mockProgressData = { progressData: [10, 15, 20] };
 
-    it("should update workout progress successfully", async () => {
+    it("должен успешно обновить прогресс тренировки", async () => {
       const mockResponse = { data: { message: "Progress updated" } };
       mockedAxios.patch.mockResolvedValueOnce(mockResponse);
 
@@ -163,7 +163,7 @@ describe("Workout API", () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it("should handle invalid progress data", async () => {
+    it("должен обрабатывать неверные данные прогресса", async () => {
       const invalidData = { progressData: [] };
       const error = new Error("Invalid progress data");
       mockedAxios.patch.mockRejectedValueOnce(error);
@@ -180,7 +180,7 @@ describe("Workout API", () => {
   });
 
   describe("clearProgressWorkout", () => {
-    it("should clear workout progress successfully", async () => {
+    it("должен успешно очистить прогресс тренировки", async () => {
       const mockResponse = { data: { message: "Progress cleared" } };
       mockedAxios.patch.mockResolvedValueOnce(mockResponse);
 
@@ -204,7 +204,7 @@ describe("Workout API", () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it("should handle workout not found when clearing progress", async () => {
+    it("должен обрабатывать ошибку 'тренировка не найдена' при очистке прогресса", async () => {
       const error = new Error("Workout not found");
       mockedAxios.patch.mockRejectedValueOnce(error);
 
